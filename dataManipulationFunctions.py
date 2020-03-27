@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.interpolate import interp1d
 
 
 # Help function for import td txt file - finds where there are no longer 4 columns by throwing exception
@@ -23,6 +24,20 @@ def import_td_text_file(fname):
     ecg = np.concatenate((ecg1, ecg2), axis=0)
 
     return ecg, v
+
+
+# create an interpolation function - range of function is from lowest value in file to highest value in file
+# for 2,3,4 & 5 max range is 0.02 to 2.31
+def create_interpolation_function(fname, min_x, max_x, sample_number):
+    ecg, v = import_td_text_file(fname)
+    vx = v[:, 0]
+    vy = v[:, 1]
+    f_v = interp1d(vx, vy)
+    ecgx = v[:, 0]
+    ecgy = v[:, 1]
+    f_ecg = interp1d(ecgx, ecgy)
+    x = np.linspace(min_x, max_x, sample_number)
+    return f_ecg, f_v, x
 
 
 # Help function to trim array, creates an array of indexes for uniform removal of values
