@@ -36,6 +36,7 @@ def create_interpolation_function(fname, min_x, max_x, sample_number):
     ecgx = ecg[:, 0]
     ecgy = ecg[:, 1]
     f_ecg = interp1d(ecgx, ecgy)
+   #np.lins
     x = np.linspace(min_x, max_x, sample_number)
     return f_ecg, f_v, x
 

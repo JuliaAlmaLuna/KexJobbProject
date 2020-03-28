@@ -5,7 +5,11 @@ import neurolab as nl
 import dataManipulationFunctions as imp
 
 #Importing the file
+#print(imp.find_max_rows("TD_+_EKG_data/3_ecg.txt"))
+
 ecg, v = imp.import_td_text_file("TD_+_EKG_data/3_ecg.txt")
+print(len(ecg))
+print(len(v))
 
 
 #Creating temporary arrays for easier plotting
