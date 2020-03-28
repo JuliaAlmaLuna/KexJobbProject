@@ -41,6 +41,32 @@ def create_interpolation_function(fname, min_x, max_x, sample_number):
     return f_ecg, f_v, x
 
 
+def other_not_interpolating_function(fname):
+    ecg, v = import_td_text_file(fname)
+    vx = v[:, 0]
+    vy = v[:, 1]
+    ecgx = ecg[:, 0]
+    ecgy = ecg[:, 1]
+    total_time = vx[len(vx)] - vx[0]
+    time_step = total_time / len(vx)
+    exgy_avgd = []
+
+    for ultra in vx:
+        temp_val = 0
+        temp_ecg_val = 0
+
+        for spot, ecg_time in enumerate(ecgx,0):
+
+            if ecg_time < (ultra - (time_step/2)) & ecg_time > (ultra + (time_step/2)):
+
+                temp_val =+ 1
+                temp_ecg_val =+ ecgy[spot]
+        exgy_avgd.append(temp_ecg_val/temp_val)
+
+    return vx,vy,exgy_avgd
+
+
+
 # Help function to trim array, creates an array of indexes for uniform removal of values
 def create_index_remove_list(remove_quantity, remove_step):
     rmv_index = [0]
