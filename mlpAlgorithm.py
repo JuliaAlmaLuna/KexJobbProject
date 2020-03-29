@@ -12,9 +12,18 @@ def get_data(f_names):
     targets = []
     inputs = []
     for name in f_names:
-        f_ecg, f_v, x = dmf.create_interpolation_function(name, 0.02, 2.31, 250)
+        #Interpolation function
+        #f_ecg, f_v, x = dmf.create_interpolation_function(name, 0.02, 2.31, 250)
+        #targets.append(f_ecg(x))
+        #inputs.append(f_v(x))
+
+        #Other function
+        f_ecg, f_v, x = dmf.other_not_interpolating_function(name, 0.02, 2.31, 250)
         targets.append(f_ecg(x))
         inputs.append(f_v(x))
+
+
+
     targets = np.array(targets)
     inputs = np.array(inputs)
     return targets, inputs, x
