@@ -3,7 +3,8 @@ import dataManipulationFunctions as dmf
 import numpy as np
 import matplotlib.pyplot as plt
 
-file_names = ["2_ecg.txt", "3_ecg.txt", "4_ecg.txt"]
+file_folder = "ECG_Folder/"
+file_names = [file_folder + "2_ecg.txt", file_folder + "3_ecg.txt", file_folder + "4_ecg.txt"]
 targets = []
 inputs = []
 
@@ -18,7 +19,7 @@ targets = np.array(targets)
 inputs = np.array(inputs)
 
 
-f_ecg_test, f_v_test, x = dmf.create_interpolation_function("5_ecg.txt", 0.02, 2.31, 250)
+f_ecg_test, f_v_test, x = dmf.create_interpolation_function(file_folder + "5_ecg.txt", 0.02, 2.31, 250)
 test_input = np.array(f_v_test(x))
 test_target = np.array(f_ecg_test(x))
 test_input = np.reshape(test_input, (1, 250))

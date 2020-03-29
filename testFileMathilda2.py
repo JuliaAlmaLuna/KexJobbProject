@@ -3,7 +3,8 @@ import dataManipulationFunctions as dmf
 import matplotlib.pyplot as plt
 from scipy.special import expit, logit
 
-file_names = ["2_ecg.txt", "3_ecg.txt", "4_ecg.txt"]
+file_folder = "ECG_Folder/"
+file_names = [file_folder + "2_ecg.txt", file_folder + "3_ecg.txt", file_folder + "4_ecg.txt"]
 input_size = 250
 output_size = 16
 first_layer_size = 16

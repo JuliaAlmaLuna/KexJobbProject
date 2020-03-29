@@ -3,9 +3,10 @@ import dataManipulationFunctions as dmf
 import numpy as np
 import matplotlib.pyplot as plt
 
-training_file_names = ["2_ecg.txt", "3_ecg.txt", "6_ecg.txt", "7_ecg.txt", "4_ecg.txt", "9_ecg.txt",
-                       "11_ecg.txt"]
-testing_file_names = ["5_ecg.txt", "8_ecg.txt"]
+file_folder = "ECG_Folder/"
+training_file_names = [file_folder + "2_ecg.txt", file_folder + "3_ecg.txt", file_folder + "6_ecg.txt", file_folder + "7_ecg.txt", file_folder + "4_ecg.txt", file_folder + "9_ecg.txt",
+                       file_folder + "11_ecg.txt"]
+testing_file_names = [file_folder + "5_ecg.txt", file_folder + "8_ecg.txt"]
 
 
 def get_data(f_names):

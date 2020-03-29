@@ -129,7 +129,7 @@ def get_cost_value(Y_hat, Y):
     return np.squeeze(cost)
 '''
 
-#Alternative cost function that uses euclidean distance instead. 
+#Alternative cost function that uses euclidean distance instead.
 def get_cost_value(Y_hat, Y):
     # number of examples
     m = Y_hat.shape[1]
