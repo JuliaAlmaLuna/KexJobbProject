@@ -119,15 +119,23 @@ def full_forward_propagation(X, params_values, nn_architecture):
     return A_curr, memory
 
 
-
+'''
 def get_cost_value(Y_hat, Y):
     # number of examples
     m = Y_hat.shape[1]
     # calculation of the cost according to the formula
     cost = -1 / m * (np.dot(Y, np.log(Y_hat).T) + np.dot(1 - Y, np.log(1 - Y_hat).T))
+
     return np.squeeze(cost)
+'''
 
-
+#Alternative cost function that uses euclidean distance instead. 
+def get_cost_value(Y_hat, Y):
+    # number of examples
+    m = Y_hat.shape[1]
+    # calculation of the cost according to euclidean distance
+    cost = (1/m) * np.linalg.norm(Y_hat - Y)
+    return np.squeeze(cost)
 
 
 # an auxiliary function that converts probability into class
