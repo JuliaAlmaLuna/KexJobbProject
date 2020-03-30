@@ -20,8 +20,8 @@ def get_data(f_names):
     return targets, inputs, x
 
 
-training_targets, training_inputs, x = get_data(training_file_names)
-testing_targets, testing_input, x = get_data(testing_file_names)
+training_targets, training_inputs, X = get_data(training_file_names)
+testing_targets, testing_input, X = get_data(testing_file_names)
 
 
 mlp = MLPRegressor(
@@ -34,11 +34,12 @@ mlp.fit(training_inputs, training_targets)
 prediction = mlp.predict(testing_input)
 prediction1 = prediction[0, :]
 prediction2 = prediction[1, :]
-plt.plot(x, prediction1, 'y')
-plt.plot(x, prediction2, 'm')
+plt.plot(X, prediction1, 'y')
+plt.plot(X, prediction2, 'm')
 testing_targets1 = testing_targets[0, :]
 testing_targets2 = testing_targets[1, :]
-plt.plot(x, testing_targets1, 'g')
-plt.plot(x, testing_targets2, 'r')
+plt.plot(X, testing_targets1, 'g')
+plt.plot(X, testing_targets2, 'r')
 plt.show()
+
 
