@@ -134,7 +134,7 @@ def get_cost_value(Y_hat, Y):
     # number of examples
     m = Y_hat.shape[1]
     # calculation of the cost according to euclidean distance
-    cost = (1/m) * np.linalg.norm(Y_hat - Y)
+    cost =  (1/m) * np.linalg.norm(Y_hat - Y)
     return np.squeeze(cost)
 
 
@@ -184,7 +184,12 @@ def full_backward_propagation(Y_hat, Y, memory, params_values, nn_architecture):
     Y = Y.reshape(Y_hat.shape)
 
     # initiation of gradient descent algorithm
-    dA_prev = - (np.divide(Y, Y_hat) - np.divide(1 - Y, 1 - Y_hat));
+   #dA_prev = - (np.divide(Y, Y_hat) - np.divide(1 - Y, 1 - Y_hat));
+
+    #Our way of doing it requires another derivate for
+   # dA_prev =  np.linalg.norm(np.subtract(Y_hat,Y))
+    dA_prev =  np.divide(np.subtract(Y_hat,Y),np.linalg.norm(np.subtract(Y_hat,Y)))
+
 
     for layer_idx_prev, layer in reversed(list(enumerate(nn_architecture))):
         # we number network layers from 1
@@ -256,6 +261,7 @@ N_SAMPLES = 1000
 TEST_SIZE = 0.1
 
 X, y = make_moons(n_samples = N_SAMPLES, noise=0.2, random_state=100)
+
 
 
 #Egenskapad array för att testa.
@@ -338,7 +344,8 @@ def callback_numpy_plot(index, params):
 #params_values = train(np.transpose(X_train), np.transpose(y_train.reshape((y_train.shape[0], 1))), nn_architecture, 100, 0.01)
 
 # Training new
-params_values = train(np.transpose(X_train), np.transpose(y_train.reshape((y_train.shape[0], 1))), nn_architecture, 10000, 0.01, False, callback_numpy_plot)
+params_values = train(np.transpose(X_train), np.transpose(y_train.reshape((y_train.shape[0], 1))), nn_architecture, 10000, 0.5, False, callback_numpy_plot)
+
 
 
 # Prediction
