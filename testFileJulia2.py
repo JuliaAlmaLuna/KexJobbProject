@@ -4,6 +4,7 @@ from sklearn.datasets import make_moons
 from sklearn.model_selection import train_test_split
 
 from datetime import datetime
+import dataManipulationFunctions as dmf
 
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -27,6 +28,26 @@ nn_architecture = [
     {"input_dim": 50, "output_dim": 25, "activation": "relu"},
     {"input_dim": 25, "output_dim": 1, "activation": "sigmoid"},
 ]
+
+def get_data(f_names):
+    targets = []
+    inputs = []
+    for name in f_names:
+        #Interpolation function
+        #f_ecg, f_v, x = dmf.create_interpolation_function(name, 0.02, 2.31, 250)
+        #targets.append(f_ecg(x))
+        #inputs.append(f_v(x))
+
+        #Other function
+        f_ecg, f_v, x = dmf.other_not_interpolating_function(name, 0.02, 2.31, 250)
+        targets.append(f_ecg(x))
+        inputs.append(f_v(x))
+
+
+    targets = np.array(targets)
+    inputs = np.array(inputs)
+    return targets, inputs, x
+
 
 
 def init_layers(nn_architecture, seed=99):
@@ -134,7 +155,7 @@ def get_cost_value(Y_hat, Y):
     # number of examples
     m = Y_hat.shape[1]
     # calculation of the cost according to euclidean distance
-    cost =  (1/m) * np.linalg.norm(Y_hat - Y)
+    cost =  (1/m) * np.linalg.norm(np.subtract(Y_hat,Y))
     return np.squeeze(cost)
 
 
@@ -260,7 +281,7 @@ N_SAMPLES = 1000
 # ratio between training and test sets
 TEST_SIZE = 0.1
 
-X, y = make_moons(n_samples = N_SAMPLES, noise=0.2, random_state=100)
+X, y = make_moons(n_samples = N_SAMPLES, noise=0.3, random_state=100)
 
 
 
@@ -287,6 +308,26 @@ print(X)
 print(y)
 
 #Slut på egenskapad array bit.
+
+
+#testande med ekg array test
+
+file_folder = "ECG_Folder/"
+training_file_names = [file_folder + "2_ecg.txt", file_folder + "3_ecg.txt", file_folder + "6_ecg.txt", file_folder + "7_ecg.txt", file_folder + "4_ecg.txt", file_folder + "9_ecg.txt",
+                       file_folder + "11_ecg.txt"]
+testing_file_names = [file_folder + "5_ecg.txt", file_folder + "8_ecg.txt"]
+
+
+training_targets, training_inputs, temp = get_data(training_file_names)
+testing_targets, testing_input, temp = get_data(testing_file_names)
+
+
+#Här får du gärna få det att funka, för det blir något fel när jag använder den datan. Tror det blir fel för att arrayerna har fel "shape"
+#X = training_inputs
+#y = training_targets
+
+
+#Slut på den biten
 
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=TEST_SIZE, random_state=42)
@@ -344,7 +385,7 @@ def callback_numpy_plot(index, params):
 #params_values = train(np.transpose(X_train), np.transpose(y_train.reshape((y_train.shape[0], 1))), nn_architecture, 100, 0.01)
 
 # Training new
-params_values = train(np.transpose(X_train), np.transpose(y_train.reshape((y_train.shape[0], 1))), nn_architecture, 10000, 0.5, False, callback_numpy_plot)
+params_values = train(np.transpose(X_train), np.transpose(y_train.reshape((y_train.shape[0], 1))), nn_architecture, 10000, 0.7, False, callback_numpy_plot)
 
 
 
