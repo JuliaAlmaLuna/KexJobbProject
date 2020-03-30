@@ -36,8 +36,43 @@ def create_interpolation_function(fname, min_x, max_x, sample_number):
     ecgx = ecg[:, 0]
     ecgy = ecg[:, 1]
     f_ecg = interp1d(ecgx, ecgy)
+   #np.lins
     x = np.linspace(min_x, max_x, sample_number)
     return f_ecg, f_v, x
+
+# Den blev en blandning av interpolering och inte interpolering.
+def other_not_interpolating_function(fname,  min_x, max_x, sample_number):
+    ecg, v = import_td_text_file(fname)
+    vx = v[:, 0]
+    vy = v[:, 1]
+    ecgx = ecg[:, 0]
+    ecgy = ecg[:, 1]
+    total_time = vx[len(vx)-1] - vx[0]
+    time_step = total_time / (len(vx)-1)
+    exgy_avgd = []
+
+    for ultra in vx:
+        temp_val = 0
+        temp_ecg_val = 0
+
+        for spot, ecg_time in enumerate(ecgx, 0):
+
+            if ecg_time < (ultra + (time_step/2)):
+                if ecg_time > (ultra - (time_step/2)):
+                    temp_val =+ 1
+                    temp_ecg_val =+ ecgy[spot]
+
+        temp_ecg_val = temp_ecg_val/temp_val
+        exgy_avgd.append(temp_ecg_val)
+
+    f_v = interp1d(vx, vy)
+    f_ecg = interp1d(vx, exgy_avgd)
+
+    vx = np.linspace(min_x, max_x, sample_number)
+
+    return f_ecg, f_v, vx
+    #return exgy_avgd, vy, vx
+
 
 
 # Help function to trim array, creates an array of indexes for uniform removal of values

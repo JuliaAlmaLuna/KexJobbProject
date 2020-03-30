@@ -3,8 +3,8 @@ import dataManipulationFunctions as dmf
 import matplotlib.pyplot as plt
 import numpy as np
 
-
-file_names = ["2_ecg.txt", "3_ecg.txt", "4_ecg.txt", "5_ecg.txt"]
+file_folder = "ECG_Folder/"
+file_names = [file_folder + "2_ecg.txt", file_folder + "3_ecg.txt", file_folder + "4_ecg.txt", file_folder + "5_ecg.txt"]
 ecg, v = dmf.import_td_text_file(file_names[0])
 vx = v[:, 0]
 vy = v[:, 1]

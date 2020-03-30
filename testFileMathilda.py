@@ -4,16 +4,16 @@ import dataManipulationFunctions as dmf
 
 # SKIT I DENNA :)
 
-
+file_folder = "ECG_Folder/"
 input_dim = 250
 learning_rate = 0.01
 weights = np.random.rand(input_dim,2)
 
 # Behövs en funktion som samlar all training data!
 
-ecg8, v8 = dmf.import_td_text_file("8_ecg.txt")
+ecg8, v8 = dmf.import_td_text_file(file_folder + "8_ecg.txt")
 v8 = dmf.trim_array(v8, 250)
-ecg2, v2 = dmf.import_td_text_file("2_ecg.txt")
+ecg2, v2 = dmf.import_td_text_file(file_folder + "2_ecg.txt")
 v2 = dmf.trim_array(v2, 250)
 
 v = np.array([v8, v2])
