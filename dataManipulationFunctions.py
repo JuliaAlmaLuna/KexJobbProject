@@ -36,9 +36,10 @@ def create_interpolation_function(fname, min_x, max_x, sample_number):
     ecgx = ecg[:, 0]
     ecgy = ecg[:, 1]
     f_ecg = interp1d(ecgx, ecgy)
-   #np.lins
+    # np.lins
     x = np.linspace(min_x, max_x, sample_number)
     return f_ecg, f_v, x
+
 
 # Den blev en blandning av interpolering och inte interpolering.
 def other_not_interpolating_function(fname,  min_x, max_x, sample_number):
@@ -71,8 +72,7 @@ def other_not_interpolating_function(fname,  min_x, max_x, sample_number):
     vx = np.linspace(min_x, max_x, sample_number)
 
     return f_ecg, f_v, vx
-    #return exgy_avgd, vy, vx
-
+    # return exgy_avgd, vy, vx
 
 
 # Help function to trim array, creates an array of indexes for uniform removal of values
