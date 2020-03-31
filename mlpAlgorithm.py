@@ -3,7 +3,7 @@ import dataManipulationFunctions as dmf
 import numpy as np
 import matplotlib.pyplot as plt
 
-file_folder = "ECG_Folder/"
+file_folder = "MLPregressor_sklearn/ECG_Folder/"
 training_file_names = [file_folder + "2_ecg.txt", file_folder + "3_ecg.txt", file_folder + "6_ecg.txt", file_folder + "7_ecg.txt", file_folder + "4_ecg.txt", file_folder + "9_ecg.txt",
                        file_folder + "11_ecg.txt"]
 testing_file_names = [file_folder + "5_ecg.txt", file_folder + "8_ecg.txt"]
@@ -12,21 +12,27 @@ testing_file_names = [file_folder + "5_ecg.txt", file_folder + "8_ecg.txt"]
 def get_data(f_names):
     targets = []
     inputs = []
+    i = 0
     for name in f_names:
+        i = i + 1
         #Interpolation function
-        #f_ecg, f_v, x = dmf.create_interpolation_function(name, 0.02, 2.31, 250)
+        f_ecg, f_v, x = dmf.create_interpolation_function(name, 0.02, 2.31, 250)
+        temp_targets = np.asarray(f_ecg(x))
+        temp_targets.reshape(250,1)
+        temp_inputs = np.asarray(f_v(x))
+        temp_inputs.reshape(250,1)
+        targets.extend(temp_targets)
+        inputs.extend(temp_inputs)
+
+        #Other function
+        #f_ecg, f_v, x = dmf.other_not_interpolating_function(name, 0.02, 2.31, 250)
         #targets.append(f_ecg(x))
         #inputs.append(f_v(x))
 
-        #Other function
-        f_ecg, f_v, x = dmf.other_not_interpolating_function(name, 0.02, 2.31, 250)
-        targets.append(f_ecg(x))
-        inputs.append(f_v(x))
-
-
-
     targets = np.array(targets)
     inputs = np.array(inputs)
+    targets.reshape(250 * i, 1)
+    inputs.reshape(250 * i, 1)
     return targets, inputs, x
 
 

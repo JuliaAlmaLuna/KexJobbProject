@@ -28,7 +28,7 @@ nn_architecture = [
     {"input_dim": 50, "output_dim": 25, "activation": "relu"},
     {"input_dim": 25, "output_dim": 1, "activation": "sigmoid"},
 ]
-
+'''
 def get_data(f_names):
     targets = []
     inputs = []
@@ -46,6 +46,36 @@ def get_data(f_names):
 
     targets = np.array(targets)
     inputs = np.array(inputs)
+    return targets, inputs, x
+'''
+
+def get_data(f_names):
+    targets = []
+    inputs = []
+    i = 0
+    for name in f_names:
+        i = i + 1
+        #Interpolation function
+        f_ecg, f_v, x = dmf.create_interpolation_function(name, 0.02, 2.31, 250)
+        temp_targets = np.asarray(f_ecg(x))
+        temp_targets.reshape(250,1)
+        temp_inputs = np.asarray(f_v(x))
+        temp_inputs.reshape(250,1)
+        targets.extend(temp_targets)
+        inputs.extend(temp_inputs)
+
+        #Other function
+        #f_ecg, f_v, x = dmf.other_not_interpolating_function(name, 0.02, 2.31, 250)
+        #targets.append(f_ecg(x))
+        #inputs.append(f_v(x))
+
+
+
+
+    targets = np.array(targets)
+    inputs = np.array(inputs)
+    targets.reshape(250 * i, 1)
+    inputs.reshape(250 * i, 1)
     return targets, inputs, x
 
 
@@ -297,22 +327,25 @@ for x in testArray:
     else:
         x[2] = 0
 
+
+
+
 y_array = testArray[:,2]
 testArray = testArray[:,0:2]
 
 #X = testArray
-#y = y_array
+# = y_array
 
-
-print(X)
-print(y)
+print("Egenskapad array")
+print(y_array.shape)
+print(testArray.shape)
 
 #Slut på egenskapad array bit.
 
 
 #testande med ekg array test
 
-file_folder = "ECG_Folder/"
+file_folder = "MLPregressor_sklearn/ECG_Folder/"
 training_file_names = [file_folder + "2_ecg.txt", file_folder + "3_ecg.txt", file_folder + "6_ecg.txt", file_folder + "7_ecg.txt", file_folder + "4_ecg.txt", file_folder + "9_ecg.txt",
                        file_folder + "11_ecg.txt"]
 testing_file_names = [file_folder + "5_ecg.txt", file_folder + "8_ecg.txt"]
@@ -321,10 +354,15 @@ testing_file_names = [file_folder + "5_ecg.txt", file_folder + "8_ecg.txt"]
 training_targets, training_inputs, temp = get_data(training_file_names)
 testing_targets, testing_input, temp = get_data(testing_file_names)
 
+onerow = np.ones(1750)
+temp_matrix = np.column_stack((training_inputs, onerow))
+training_inputs = temp_matrix
 
-#Här får du gärna få det att funka, för det blir något fel när jag använder den datan. Tror det blir fel för att arrayerna har fel "shape"
-#X = training_inputs
-#y = training_targets
+print(training_targets.shape)
+print(training_inputs.shape)
+
+X = training_inputs
+y = training_targets
 
 
 #Slut på den biten
@@ -358,10 +396,10 @@ def make_plot(X, y, plot_name, file_name=None, XX=None, YY=None, preds=None, dar
 
 
 # boundary of the graph
-GRID_X_START = -1.5
-GRID_X_END = 10
-GRID_Y_START = -1.0
-GRID_Y_END = 10
+GRID_X_START = -20
+GRID_X_END = 20
+GRID_Y_START = -5
+GRID_Y_END = 5
 
 # output directory (the folder must be created on the drive)
 folderName = "PlotFolder{}".format(datetime.now())
@@ -386,7 +424,7 @@ def callback_numpy_plot(index, params):
 
 # Training new
 params_values = train(np.transpose(X_train), np.transpose(y_train.reshape((y_train.shape[0], 1))), nn_architecture, 10000, 0.7, False, callback_numpy_plot)
-
+#params_values = train(np.transpose(X_train), np.transpose(y_train), nn_architecture, 10000, 0.7, False, callback_numpy_plot)
 
 
 # Prediction
