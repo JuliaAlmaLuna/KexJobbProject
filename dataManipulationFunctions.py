@@ -94,3 +94,17 @@ def trim_array(array, goal_size):
     rmv_index = create_index_remove_list(rmv_quantity, rmv_step)
     trimmed_array = np.delete(array, obj=rmv_index, axis=0)
     return trimmed_array
+
+
+def get_data(f_names):
+    targets = []
+    inputs = []
+
+    for name in f_names:
+        f_ecg, f_v, x = create_interpolation_function(name, 0.02, 2.31, 950)
+        targets.append(f_ecg(x))
+        inputs.append(f_v(x))
+
+    targets = np.array(targets)
+    inputs = np.array(inputs)
+    return targets, inputs, x

@@ -80,11 +80,12 @@ def evaluate_performance(mlp, testing_inputs, testing_targets, training_inputs, 
             curr_max = max_error_
 
     print(message)
-    print("____________________________________________________")
-    print("R2 score:\t\t" + str(r2_score) + "\ntest MSE:\t\t" + str(test_mse) + "\ntrain MSE:\t\t" +
-          str(train_mse) + "\nEVS, ua:\t\t" + str(ev_score) + "\nMax error:\t\t" + str(curr_max) +
-          "\nPearson corr:\t\t" + str(pearson_corr))
-    print("____________________________________________________")
+    print("__________________________________________________________________________")
+    print("R2 score:\t\t\t" + str(r2_score) + "\t\t\tGoal: positive & close to 1" + "\ntest MSE:\t\t\t" + str(test_mse)
+          + "\t\t\tGoal: lower than train MSE" + "\ntrain MSE:\t\t\t" + str(train_mse) + "\nEVS, ua:\t\t\t" +
+          str(ev_score) + "\t\t\tGoal: Same as R2" + "\nMax error:\t\t\t" + str(curr_max) +
+          "\t\t\tGoal: As low as possible" + "\nPearson:\t\t\t" + str(pearson_corr) + "\t\t\tGoal: close to 1")
+    print("__________________________________________________________________________")
 
 
 evaluate_performance(mlp, testing_inputs, testing_targets, training_inputs, training_targets)
