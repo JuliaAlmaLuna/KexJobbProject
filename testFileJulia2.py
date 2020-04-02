@@ -6,11 +6,15 @@ from sklearn.model_selection import train_test_split
 from datetime import datetime
 import dataManipulationFunctions as dmf
 
+import sklearn.preprocessing as preproc
+
 import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
 sns.set_style("whitegrid")
+
+import testFileJulia3 as tstJ3
 
 import keras
 from keras.models import Sequential
@@ -28,26 +32,7 @@ nn_architecture = [
     {"input_dim": 50, "output_dim": 25, "activation": "relu"},
     {"input_dim": 25, "output_dim": 1, "activation": "sigmoid"},
 ]
-'''
-def get_data(f_names):
-    targets = []
-    inputs = []
-    for name in f_names:
-        #Interpolation function
-        #f_ecg, f_v, x = dmf.create_interpolation_function(name, 0.02, 2.31, 250)
-        #targets.append(f_ecg(x))
-        #inputs.append(f_v(x))
 
-        #Other function
-        f_ecg, f_v, x = dmf.other_not_interpolating_function(name, 0.02, 2.31, 250)
-        targets.append(f_ecg(x))
-        inputs.append(f_v(x))
-
-
-    targets = np.array(targets)
-    inputs = np.array(inputs)
-    return targets, inputs, x
-'''
 
 def get_data(f_names):
     targets = []
@@ -351,15 +336,20 @@ training_file_names = [file_folder + "2_ecg.txt", file_folder + "3_ecg.txt", fil
 testing_file_names = [file_folder + "5_ecg.txt", file_folder + "8_ecg.txt"]
 
 
-training_targets, training_inputs, temp = get_data(training_file_names)
-testing_targets, testing_input, temp = get_data(testing_file_names)
+training_targets, training_inputs , temp , temp2= tstJ3.get_data(training_file_names)
+testing_targets, testing_input, temp , temp2 = tstJ3.get_data(testing_file_names)
+training_inputs  = training_inputs.reshape(1750,2)
 
-onerow = np.ones(1750)
-temp_matrix = np.column_stack((training_inputs, onerow))
-training_inputs = temp_matrix
+#onerow = np.ones(1750)
+#temp_matrix = np.column_stack((training_inputs, onerow))
+#training_inputs = temp_matrix
 
 print(training_targets.shape)
 print(training_inputs.shape)
+
+training_targets, norm_targets = dmf.normalizeData(training_targets)
+training_inputs, norm_inputs = dmf.normalizeData(training_inputs)
+
 
 X = training_inputs
 y = training_targets
@@ -396,10 +386,10 @@ def make_plot(X, y, plot_name, file_name=None, XX=None, YY=None, preds=None, dar
 
 
 # boundary of the graph
-GRID_X_START = -20
-GRID_X_END = 20
-GRID_Y_START = -5
-GRID_Y_END = 5
+GRID_X_START = -1
+GRID_X_END = 1
+GRID_Y_START = -1
+GRID_Y_END = 1
 
 # output directory (the folder must be created on the drive)
 folderName = "PlotFolder{}".format(datetime.now())

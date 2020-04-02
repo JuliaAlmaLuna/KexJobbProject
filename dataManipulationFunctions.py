@@ -25,6 +25,13 @@ def import_td_text_file(fname):
 
     return ecg, v
 
+def normalizeData(data):
+    data_norm = np.linalg.norm(data, np.inf)
+    data = np.divide(data, data_norm)
+    data = np.add(data, 0.5)
+
+    return data, data_norm
+
 
 # create an interpolation function - range of function is from lowest value in file to highest value in file
 # for 2,3,4 & 5 max range is 0.02 to 2.31
