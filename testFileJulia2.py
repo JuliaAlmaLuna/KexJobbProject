@@ -413,7 +413,7 @@ def callback_numpy_plot(index, params):
 #params_values = train(np.transpose(X_train), np.transpose(y_train.reshape((y_train.shape[0], 1))), nn_architecture, 100, 0.01)
 
 # Training new
-params_values = train(np.transpose(X_train), np.transpose(y_train.reshape((y_train.shape[0], 1))), nn_architecture, 10000, 0.7, False, callback_numpy_plot)
+params_values = train(np.transpose(X_train), np.transpose(y_train.reshape((y_train.shape[0], 1))), nn_architecture, 20000, 0.7, False, callback_numpy_plot)
 #params_values = train(np.transpose(X_train), np.transpose(y_train), nn_architecture, 10000, 0.7, False, callback_numpy_plot)
 
 
