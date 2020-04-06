@@ -2,6 +2,8 @@ import numpy as np
 from scipy.interpolate import interp1d
 import cv2
 import os
+from PIL import Image
+from math import sqrt
 
 
 # Help function for import td txt file - finds where there are no longer 4 columns by throwing exception
@@ -118,7 +120,7 @@ def get_data(f_names):
     inputs = np.array(inputs)
     return targets, inputs, x
 
-
+#Turns video files into a picture per frame.
 def vidToImg(video):
     # Read the video from specified path
     cam = cv2.VideoCapture(video)
@@ -143,3 +145,34 @@ def vidToImg(video):
         success, image = vidcap.read()
         print('Read frame:{} '.format(count), success)
         count += 1
+
+    imageString = "data/frame%d.jpg"
+
+    return imageString, count
+
+def imgToList(imageString):
+    imag = Image.open(imageString)
+    # Convert the image te Greyscale if it is a .gif for example
+    imag = imag.convert('L')
+
+    pixelList = []
+
+    # Get RGB
+    img_width, img_height = imag.size
+    for x in range(img_width):
+        for y in range(img_height):
+            pixelBrightness = imag.getpixel((x, y)) #Retreives the pixel value of the pixel.
+            pixelList.append(pixelBrightness)
+
+    return pixelList
+
+def vidToNestedPixelList(video):
+    imageString, amount = vidToImg(video)
+
+    nestedPixelList = []
+
+    for frame in range(amount):
+        temp = imgToList("data/frame%d.jpg" %frame)
+        nestedPixelList.append(temp)
+
+    return nestedPixelList
