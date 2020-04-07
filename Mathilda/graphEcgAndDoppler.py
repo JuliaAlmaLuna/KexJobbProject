@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 # This file plots all ecg and doppler in graphs together (different scales) to check for inconsistencies in time
 
-file_folder = "MLPregressor_sklearn/ECG_Folder/"
+file_folder = "../MLPregressor_sklearn/ECG_Folder/"
 file_names = [file_folder + "2_ecg.txt", file_folder + "3_ecg.txt", file_folder + "6_ecg.txt", file_folder +
               "7_ecg.txt", file_folder + "4_ecg.txt", file_folder + "9_ecg.txt", file_folder + "11_ecg.txt",
               file_folder + "5_ecg.txt", file_folder + "8_ecg.txt"]

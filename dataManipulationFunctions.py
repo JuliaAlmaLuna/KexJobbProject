@@ -8,7 +8,7 @@ from math import sqrt
 
 # Help function for import td txt file - finds where there are no longer 4 columns by throwing exception
 def find_max_rows(fname):
-    i = 250  # The smallest array size possible for TD data
+    i = 150  # The smallest array size possible for TD data
     while 1:
         try:
             np.loadtxt(fname, skiprows=3, usecols=(2, 3), max_rows=i)
@@ -29,6 +29,7 @@ def import_td_text_file(fname):
 
     return ecg, v
 
+
 def normalizeData(data):
     data_norm = np.linalg.norm(data, np.inf)
     data = np.divide(data, data_norm)
@@ -41,6 +42,19 @@ def normalizeData(data):
 # for 2,3,4 & 5 max range is 0.02 to 2.31
 def create_interpolation_function(fname, min_x, max_x, sample_number):
     ecg, v = import_td_text_file(fname)
+    vx = v[:, 0]
+    vy = v[:, 1]
+    f_v = interp1d(vx, vy)
+    ecgx = ecg[:, 0]
+    ecgy = ecg[:, 1]
+    f_ecg = interp1d(ecgx, ecgy)
+    # np.lins
+    x = np.linspace(min_x, max_x, sample_number)
+    return f_ecg, f_v, x
+
+
+# Same as above only taking ecg, v directly instead of fname
+def create_interpolation_function_ecg_v(ecg, v, min_x, max_x, sample_number):
     vx = v[:, 0]
     vy = v[:, 1]
     f_v = interp1d(vx, vy)
@@ -120,7 +134,8 @@ def get_data(f_names):
     inputs = np.array(inputs)
     return targets, inputs, x
 
-#Turns video files into a picture per frame.
+
+# Turns video files into a picture per frame.
 def vidToImg(video):
     # Read the video from specified path
     cam = cv2.VideoCapture(video)
@@ -150,6 +165,18 @@ def vidToImg(video):
 
     return imageString, count
 
+
+# Function returns true if pixel belongs to cone shape of ultrasound
+def belongs_to_ultrasound(x, y):
+    if y > -1.183*x + 672.79 and y > 1.183 * x - 529.14:
+        if y < -(23 / 23814) * x * x + (11684 / 11907) * x + (4855163 / 11907):
+            return True
+        else:
+            return False
+    else:
+        return False
+
+
 def imgToList(imageString):
     imag = Image.open(imageString)
     # Convert the image te Greyscale if it is a .gif for example
@@ -161,10 +188,12 @@ def imgToList(imageString):
     img_width, img_height = imag.size
     for x in range(img_width):
         for y in range(img_height):
-            pixelBrightness = imag.getpixel((x, y)) #Retreives the pixel value of the pixel.
-            pixelList.append(pixelBrightness)
+            if belongs_to_ultrasound(x, y):
+                pixelBrightness = imag.getpixel((x, y)) # Retreives the pixel value of the pixel.
+                pixelList.append(pixelBrightness)
 
     return pixelList
+
 
 def vidToNestedPixelList(video):
     imageString, amount = vidToImg(video)
@@ -176,3 +205,4 @@ def vidToNestedPixelList(video):
         nestedPixelList.append(temp)
 
     return nestedPixelList
+
