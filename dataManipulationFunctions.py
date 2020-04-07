@@ -37,6 +37,11 @@ def normalizeData(data):
 
     return data, data_norm
 
+def reNormalizeData(data, data_norm):
+    data = np.subtract(data, 0.5)
+    data = np.multiply(data, data_norm)
+    return data
+
 
 # create an interpolation function - range of function is from lowest value in file to highest value in file
 # for 2,3,4 & 5 max range is 0.02 to 2.31
