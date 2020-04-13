@@ -18,6 +18,7 @@ def find_max_rows(fname):
             i = i + 1
     return i - 1
 
+
 # Help function for import td txt file - finds where there are no longer 4 columns by throwing exception
 def find_max_rows_3Trace(fname):
     i = 1  # The smallest array size possible for TD data
@@ -30,6 +31,7 @@ def find_max_rows_3Trace(fname):
             i = i + 1
     return i - 1
 
+
 # Function to import TD+ECG data from txt file
 def import_td_text_file(fname):
     max_rows = find_max_rows(fname)
@@ -39,6 +41,7 @@ def import_td_text_file(fname):
     ecg = np.concatenate((ecg1, ecg2), axis=0)
 
     return ecg, v
+
 
 # Function to import TD+ECG data from txt file
 def import_td_text_file_ecg(fname):
@@ -57,6 +60,7 @@ def normalizeData(data):
     data = np.add(data, 0.5)
 
     return data, data_norm
+
 
 def reNormalizeData(data, data_norm):
     data = np.subtract(data, 0.5)
@@ -79,6 +83,7 @@ def create_interpolation_function(fname, min_x, max_x, sample_number):
     max_x = ecgx[len(ecgx)-1]
     x = np.linspace(min_x, max_x, sample_number)
     return f_ecg, f_v, x
+
 
 # create an interpolation function - range of function is from lowest value in file to highest value in file
 # automatically finds min and max
@@ -158,6 +163,7 @@ def get_data_ecg(f_names, sample_number=0):
 
     targets = np.array(targets)
     return targets, x
+
 
 def get_data_ecg2(f_name, sample_number=0):
     if sample_number == 0:
@@ -245,12 +251,14 @@ def vidToNestedPixelList(video):
 
     return nestedPixelList
 
+
 def listOfVidsToListOfNestedPixelList(videoList):
     video_list = []
     for video in videoList:
         temp = vidToNestedPixelList(video)
         video_list.append(temp)
     return video_list
+
 
 def createVidInputsAndTargetEcgs(videoList, ecgList):
     print("hello")
@@ -265,12 +273,10 @@ def createVidInputsAndTargetEcgs(videoList, ecgList):
         ecg_list.append(temp2)
         time_list.append(tempx)
 
-
     return vid_list, ecg_list
 
 
-
-#Gets the derivate of the pixel values in regards to next and previous frame
+# Gets the derivate of the pixel values in regards to next and previous frame
 def imgToDerivateOfImg(imgList):
 
     temp_list = imgList
@@ -285,6 +291,7 @@ def imgToDerivateOfImg(imgList):
                 temp_list[img_number][pixel_number] = imgList[img_number+1][pixel_number] -  imgList[img_number-1][pixel_number]
 
     return temp_list
+
 
 def discretizeECG(ecg):
     temp = ecg
