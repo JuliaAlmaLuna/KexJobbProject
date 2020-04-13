@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from biosppy.signals.ecg import engzee_segmenter
 from biosppy.signals.ecg import ssf_segmenter
 
-file_folder = "../MLPregressor_sklearn/ECG_Folder/"
+file_folder = "../../MLPregressor_sklearn/ECG_Folder/"
 file_names = [file_folder + "2_ecg.txt", file_folder + "3_ecg.txt", file_folder + "4_ecg.txt"]
 ecg_signals, td_signals, t = dmf.get_data(file_names)
 

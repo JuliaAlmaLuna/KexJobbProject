@@ -1,67 +1,12 @@
 from sklearn.neural_network import MLPRegressor
-import dataManipulationFunctions as dmf
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import explained_variance_score
 from sklearn.metrics import max_error
-from sklearn.metrics import r2_score
 from scipy.stats import pearsonr
-from Mathilda import genericEcg as ge
-
-number_of_sample_data = 97
-file_folder = "Mathilda/ecg_folder/"
-suffix = "_ecg.txt"
-
-
-def init_file_names(number_of_samples, file_folder_, suffix):
-    file_names_ = []
-
-    for index in range(number_of_samples):
-        string = file_folder_ + str(index+1) + suffix
-        file_names_.append(string)
-    return file_names_
-
-
-def double_data(array, curr_end_time):
-    array_x = array[:, 0]
-    array_y = array[:, 1]
-    array2_x = array_x + curr_end_time
-    array2 = np.stack((array2_x, array_y), axis=1)
-
-    doubled_array = np.concatenate((array, array2))
-    return doubled_array
-
-
-def loop_data(ecg, v, end_time):
-    curr_end_time = v[len(v) - 1, 0]
-    while curr_end_time < end_time:
-        v = double_data(v, curr_end_time)
-        ecg = double_data(ecg, curr_end_time)
-        curr_end_time = v[len(v) - 1, 0]
-    return ecg, v
-
-
-# If ecg is upside-down it is fixed
-def get_data(f_names, end_time):
-    targets = []
-    inputs = []
-
-    for name in f_names:
-        ecg, v = dmf.import_td_text_file(name)
-        ecg, v = loop_data(ecg, v, end_time)
-        f_ecg, f_v, x = dmf.create_interpolation_function_ecg_v(ecg, v, 0.035, end_time, 500)
-        if name == "ecg_Folder/9_ecg.txt" or name == "ecg_Folder/19_ecg.txt" or name == "ecg_Folder/62_ecg.txt" or name == "ecg_Folder/65_ecg.txt" or name == "ecg_Folder/69_ecg.txt" or name == "ecg_Folder/92_ecg.txt":
-            targets.append(-f_ecg(x))
-            inputs.append(f_v(x))
-        else:
-            targets.append(f_ecg(x))
-            inputs.append(f_v(x))
-
-    targets = np.array(targets)
-    inputs = np.array(inputs)
-    return targets, inputs, x
+from Mathilda.randomshit import genericEcg as ge
 
 
 def graph_predictions(mlp, testing_inputs, testing_targets, x, rows, columns):
@@ -73,8 +18,8 @@ def graph_predictions(mlp, testing_inputs, testing_targets, x, rows, columns):
             prediction = mlp.predict(testing_inputs[index, :].reshape(1, -1))
             true = testing_targets[index, :]
             plt.subplot(rows, columns, index+1)
-            plt.plot(x, prediction[0, :], 'r')
             plt.plot(x, true, 'g')
+            plt.plot(x, prediction[0, :], 'r')
         plt.show()
 
 
@@ -117,41 +62,90 @@ def evaluate_performance(mlp, testing_inputs, testing_targets, training_inputs, 
     print("__________________________________________________________________________")
 
 
-file_names = init_file_names(number_of_sample_data, file_folder, suffix)
-targets, inputs, X = get_data(file_names, 3)
+inputs = np.load("Mathilda/mlpcolordoppler/inputs.npy")
+targets = np.load("Mathilda/mlpcolordoppler/targets.npy")
+X = np.load("Mathilda/mlpcolordoppler/x.npy")
 training_inputs, testing_inputs, training_targets, testing_targets = train_test_split(inputs, targets, test_size=0.3, random_state=66)
 
 
 def find_best_beta(training_inputs_, training_targets_, testing_inputs_, testing_targets_):
-    best_r2 = -100
+    best_MSE = 10000
     best_beta1 = 0
     best_beta2 = 0
     for beta1 in np.arange(0, 1, 0.1):
         for beta2 in np.arange(0, 1, 0.1):
             mlp = MLPRegressor(
-                hidden_layer_sizes=(50,), activation='tanh', solver='adam', alpha=10, batch_size='auto',
+                hidden_layer_sizes=(96,), activation='tanh', solver='adam', alpha=10, batch_size='auto',
                 learning_rate='constant', learning_rate_init=0.01, power_t=0.5, max_iter=1000, shuffle=True,
                 random_state=9, tol=0.0001, verbose=False, warm_start=False, momentum=0.9, nesterovs_momentum=True,
                 early_stopping=True, validation_fraction=0.2, beta_1=beta1, beta_2=beta2, epsilon=1e-08)
             mlp.fit(training_inputs_, training_targets_)
-            score = mlp.score(testing_inputs_, testing_targets_)
-            if score > best_r2:
-                best_r2 = score
+            score = mean_squared_error(testing_targets_, mlp.predict(testing_inputs_))
+            if score < best_MSE:
+                best_MSE = score
                 best_beta1 = beta1
                 best_beta2 = beta2
-    print("beta 1: ")
-    print(best_beta1)
-    print("beta 2: ")
-    print(best_beta2)
-    print("r2: ")
-    print(best_r2)
+    print(best_MSE)
+    return best_beta1, best_beta2
+
+
+def find_best_layer_size(training_inputs_, training_targets_, testing_inputs_, testing_targets_):
+    best_MSE = 10000
+    best_layer_size = 1
+    for layer_size in range(1, 100):
+        mlp = MLPRegressor(
+            hidden_layer_sizes=(layer_size,), activation='tanh', solver='adam', alpha=10, batch_size='auto',
+            learning_rate='constant', learning_rate_init=0.01, power_t=0.5, max_iter=1000, shuffle=True,
+            random_state=9, tol=0.0001, verbose=False, warm_start=False, momentum=0.9, nesterovs_momentum=True,
+            early_stopping=True, validation_fraction=0.2, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
+        mlp.fit(training_inputs_, training_targets_)
+        score = mean_squared_error(testing_targets_, mlp.predict(testing_inputs_))
+        if score < best_MSE:
+            best_MSE = score
+            best_layer_size = layer_size
+    print(best_MSE)
+    return best_layer_size,
+
+
+def find_best_alpha(training_inputs_, training_targets_, testing_inputs_, testing_targets_):
+    best_MSE = 10000
+    best_alpha = 0.0001
+    for alpha in np.arange(0.0001, 1, 0.001):
+        mlp = MLPRegressor(
+            hidden_layer_sizes=(96,), activation='tanh', solver='adam', alpha=alpha, batch_size='auto',
+            learning_rate='constant', learning_rate_init=0.01, power_t=0.5, max_iter=1000, shuffle=True,
+            random_state=9, tol=0.0001, verbose=False, warm_start=False, momentum=0.9, nesterovs_momentum=True,
+            early_stopping=True, validation_fraction=0.2, beta_1=0.3, beta_2=0.5, epsilon=1e-08)
+        mlp.fit(training_inputs_, training_targets_)
+        score = mean_squared_error(testing_targets_, mlp.predict(testing_inputs_))
+        if score < best_MSE:
+            best_MSE = score
+            best_alpha = alpha
+    return best_alpha
+
+
+def find_best_epsilon(training_inputs_, training_targets_, testing_inputs_, testing_targets_):
+    best_MSE = 10000
+    best_epsilon = 0.0001
+    for epsilon in np.arange(1e-09, 1e-07, 1e-09):
+        mlp = MLPRegressor(
+            hidden_layer_sizes=(96,), activation='tanh', solver='adam', alpha=0.4211, batch_size='auto',
+            learning_rate='constant', learning_rate_init=0.01, power_t=0.5, max_iter=1000, shuffle=True,
+            random_state=9, tol=0.0001, verbose=False, warm_start=False, momentum=0.9, nesterovs_momentum=True,
+            early_stopping=True, validation_fraction=0.2, beta_1=0.3, beta_2=0.5, epsilon=epsilon)
+        mlp.fit(training_inputs_, training_targets_)
+        score = mean_squared_error(testing_targets_, mlp.predict(testing_inputs_))
+        if score < best_MSE:
+            best_MSE = score
+            best_epsilon = epsilon
+    return best_epsilon
 
 
 mlp = MLPRegressor(
-    hidden_layer_sizes=(50,), activation='tanh', solver='adam', alpha=0.0001, batch_size='auto',
+    hidden_layer_sizes=(96,), activation='tanh', solver='adam', alpha=0.4211, batch_size='auto',
     learning_rate='constant', learning_rate_init=0.01, power_t=0.5, max_iter=1000, shuffle=True,
-    random_state=99, tol=0.0001, verbose=True, warm_start=False, momentum=0.9, nesterovs_momentum=True,
-    early_stopping=True, validation_fraction=0.1, beta_1=0.8, beta_2=0.6, epsilon=1e-08)
+    random_state=45, tol=0.0001, verbose=True, warm_start=False, momentum=0.9, nesterovs_momentum=True,
+    early_stopping=True, validation_fraction=0.1, beta_1=0.3, beta_2=0.5, epsilon=1e-08)
 mlp.fit(training_inputs, training_targets)
 graph_predictions(mlp, testing_inputs=testing_inputs, testing_targets=testing_targets, x=X, rows=5, columns=7)
 evaluate_performance(mlp, testing_inputs, testing_targets, training_inputs, training_targets)
