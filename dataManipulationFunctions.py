@@ -228,7 +228,7 @@ def imgToList(imageString):
     for x in range(img_width):
         for y in range(img_height):
             if belongs_to_ultrasound(x, y):
-                pixelBrightness = imag.getpixel((x, y)) # Retreives the pixel value of the pixel.
+                pixelBrightness = int(imag.getpixel((x, y))) # Retreives the pixel value of the pixel.
                 pixelList.append(pixelBrightness)
 
     return pixelList
