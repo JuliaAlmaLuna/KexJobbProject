@@ -239,6 +239,18 @@ def imgToList(imageString):
 
     return pixelList
 
+def reduceImgSize(ListOfPixels, fraction):
+    new_ListOfPixels = []
+
+    if np.size(ListOfPixels) % fraction != 0:
+        return ValueError
+
+    for x in range(np.size(ListOfPixels)/fraction):
+        for y in range(fraction):
+            temp = temp + ListOfPixels[(x * fraction) + y]
+        temp = temp/fraction
+        new_ListOfPixels.extend(temp)
+
 
 def vidToNestedPixelList(video):
     imageString, amount = vidToImg(video)
