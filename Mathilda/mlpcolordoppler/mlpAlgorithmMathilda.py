@@ -7,6 +7,8 @@ from sklearn.metrics import explained_variance_score
 from sklearn.metrics import max_error
 from scipy.stats import pearsonr
 from Mathilda.randomshit import genericEcg as ge
+from Mathilda.mlpcolordoppler import solverAdamOptimisation
+from Mathilda.randomshit.graphEcgAndDoppler import graph_ecg_and_doppler
 
 
 def graph_predictions(mlp, testing_inputs, testing_targets, x, rows, columns):
@@ -65,90 +67,31 @@ def evaluate_performance(mlp, testing_inputs, testing_targets, training_inputs, 
 inputs = np.load("Mathilda/mlpcolordoppler/inputs.npy")
 targets = np.load("Mathilda/mlpcolordoppler/targets.npy")
 X = np.load("Mathilda/mlpcolordoppler/x.npy")
-training_inputs, testing_inputs, training_targets, testing_targets = train_test_split(inputs, targets, test_size=0.3, random_state=66)
+training_inputs, testing_inputs, training_targets, testing_targets = train_test_split(inputs, targets, test_size=0.3)
 
+# print(sao.start(training_inputs, training_targets, testing_inputs, testing_targets))
+mlp_sgd = MLPRegressor(
+    hidden_layer_sizes=(92,), activation='tanh', solver='sgd', alpha=0.4751, batch_size='auto',
+    learning_rate='adaptive', learning_rate_init=0.01, power_t=0.5, max_iter=1000, shuffle=True,
+    tol=0.0001, verbose=True, warm_start=False, momentum=0.9, nesterovs_momentum=True,
+    early_stopping=True, validation_fraction=0.1, beta_1=0.2, beta_2=0.7, epsilon=1e-08, n_iter_no_change=10)
 
-def find_best_beta(training_inputs_, training_targets_, testing_inputs_, testing_targets_):
-    best_MSE = 10000
-    best_beta1 = 0
-    best_beta2 = 0
-    for beta1 in np.arange(0, 1, 0.1):
-        for beta2 in np.arange(0, 1, 0.1):
-            mlp = MLPRegressor(
-                hidden_layer_sizes=(96,), activation='tanh', solver='adam', alpha=10, batch_size='auto',
-                learning_rate='constant', learning_rate_init=0.01, power_t=0.5, max_iter=1000, shuffle=True,
-                random_state=9, tol=0.0001, verbose=False, warm_start=False, momentum=0.9, nesterovs_momentum=True,
-                early_stopping=True, validation_fraction=0.2, beta_1=beta1, beta_2=beta2, epsilon=1e-08)
-            mlp.fit(training_inputs_, training_targets_)
-            score = mean_squared_error(testing_targets_, mlp.predict(testing_inputs_))
-            if score < best_MSE:
-                best_MSE = score
-                best_beta1 = beta1
-                best_beta2 = beta2
-    print(best_MSE)
-    return best_beta1, best_beta2
+mlp_adam = MLPRegressor(
+    hidden_layer_sizes=(73,), activation='tanh', solver='adam', alpha=10, batch_size='auto',
+    learning_rate='constant', learning_rate_init=0.01, power_t=0.5, max_iter=100, shuffle=True,
+    tol=0.0001, verbose=True, warm_start=True, momentum=0.9, nesterovs_momentum=True,
+    early_stopping=True, validation_fraction=0.35, beta_1=0.9, beta_2=0.9, epsilon=1e-08, n_iter_no_change=10)
 
+# print(solverAdamOptimisation.start(training_inputs, training_targets, testing_inputs, testing_targets))
 
-def find_best_layer_size(training_inputs_, training_targets_, testing_inputs_, testing_targets_):
-    best_MSE = 10000
-    best_layer_size = 1
-    for layer_size in range(1, 100):
-        mlp = MLPRegressor(
-            hidden_layer_sizes=(layer_size,), activation='tanh', solver='adam', alpha=10, batch_size='auto',
-            learning_rate='constant', learning_rate_init=0.01, power_t=0.5, max_iter=1000, shuffle=True,
-            random_state=9, tol=0.0001, verbose=False, warm_start=False, momentum=0.9, nesterovs_momentum=True,
-            early_stopping=True, validation_fraction=0.2, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
-        mlp.fit(training_inputs_, training_targets_)
-        score = mean_squared_error(testing_targets_, mlp.predict(testing_inputs_))
-        if score < best_MSE:
-            best_MSE = score
-            best_layer_size = layer_size
-    print(best_MSE)
-    return best_layer_size,
+mlp_adam.fit(training_inputs, training_targets)
+predictions = mlp_adam.predict(testing_inputs)
 
+'''for index in range(len(predictions)):
+    graph_ecg_and_doppler(X, predictions[index], testing_inputs[index], str(index))'''
 
-def find_best_alpha(training_inputs_, training_targets_, testing_inputs_, testing_targets_):
-    best_MSE = 10000
-    best_alpha = 0.0001
-    for alpha in np.arange(0.0001, 1, 0.001):
-        mlp = MLPRegressor(
-            hidden_layer_sizes=(96,), activation='tanh', solver='adam', alpha=alpha, batch_size='auto',
-            learning_rate='constant', learning_rate_init=0.01, power_t=0.5, max_iter=1000, shuffle=True,
-            random_state=9, tol=0.0001, verbose=False, warm_start=False, momentum=0.9, nesterovs_momentum=True,
-            early_stopping=True, validation_fraction=0.2, beta_1=0.3, beta_2=0.5, epsilon=1e-08)
-        mlp.fit(training_inputs_, training_targets_)
-        score = mean_squared_error(testing_targets_, mlp.predict(testing_inputs_))
-        if score < best_MSE:
-            best_MSE = score
-            best_alpha = alpha
-    return best_alpha
-
-
-def find_best_epsilon(training_inputs_, training_targets_, testing_inputs_, testing_targets_):
-    best_MSE = 10000
-    best_epsilon = 0.0001
-    for epsilon in np.arange(1e-09, 1e-07, 1e-09):
-        mlp = MLPRegressor(
-            hidden_layer_sizes=(96,), activation='tanh', solver='adam', alpha=0.4211, batch_size='auto',
-            learning_rate='constant', learning_rate_init=0.01, power_t=0.5, max_iter=1000, shuffle=True,
-            random_state=9, tol=0.0001, verbose=False, warm_start=False, momentum=0.9, nesterovs_momentum=True,
-            early_stopping=True, validation_fraction=0.2, beta_1=0.3, beta_2=0.5, epsilon=epsilon)
-        mlp.fit(training_inputs_, training_targets_)
-        score = mean_squared_error(testing_targets_, mlp.predict(testing_inputs_))
-        if score < best_MSE:
-            best_MSE = score
-            best_epsilon = epsilon
-    return best_epsilon
-
-
-mlp = MLPRegressor(
-    hidden_layer_sizes=(96,), activation='tanh', solver='adam', alpha=0.4211, batch_size='auto',
-    learning_rate='constant', learning_rate_init=0.01, power_t=0.5, max_iter=1000, shuffle=True,
-    random_state=45, tol=0.0001, verbose=True, warm_start=False, momentum=0.9, nesterovs_momentum=True,
-    early_stopping=True, validation_fraction=0.1, beta_1=0.3, beta_2=0.5, epsilon=1e-08)
-mlp.fit(training_inputs, training_targets)
-graph_predictions(mlp, testing_inputs=testing_inputs, testing_targets=testing_targets, x=X, rows=5, columns=7)
-evaluate_performance(mlp, testing_inputs, testing_targets, training_inputs, training_targets)
+graph_predictions(mlp_adam, testing_inputs=testing_inputs, testing_targets=testing_targets, x=X, rows=5, columns=7)
+evaluate_performance(mlp_adam, testing_inputs, testing_targets, training_inputs, training_targets)
 
 
 

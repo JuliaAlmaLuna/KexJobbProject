@@ -62,11 +62,11 @@ def graph_ecg_and_doppler(x, ecg, v, name):
     plt.show()
 
 
-targets, inputs, x = get_data(file_names)
+'''targets, inputs, x = get_data(file_names)
 for index in range(100):
     input_ = inputs[index, :]
     target = targets[index, :]
-    graph_ecg_and_doppler(x, target, input_, file_names[index])
+    graph_ecg_and_doppler(x, target, input_, file_names[index])'''
 
 
 

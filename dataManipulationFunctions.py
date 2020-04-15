@@ -261,7 +261,6 @@ def listOfVidsToListOfNestedPixelList(videoList):
 
 
 def createVidInputsAndTargetEcgs(videoList, ecgList):
-    print("hello")
     vid_list = []
     ecg_list = []
     time_list = []
