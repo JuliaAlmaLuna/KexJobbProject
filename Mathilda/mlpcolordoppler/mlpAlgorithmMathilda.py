@@ -77,21 +77,21 @@ mlp_sgd = MLPRegressor(
     early_stopping=True, validation_fraction=0.1, beta_1=0.2, beta_2=0.7, epsilon=1e-08, n_iter_no_change=10)
 
 mlp_adam = MLPRegressor(
-    hidden_layer_sizes=(73,), activation='tanh', solver='adam', alpha=10, batch_size='auto',
+    hidden_layer_sizes=(60,), activation='tanh', solver='adam', alpha=10, batch_size='auto',
     learning_rate='constant', learning_rate_init=0.01, power_t=0.5, max_iter=100, shuffle=True,
-    tol=0.0001, verbose=True, warm_start=True, momentum=0.9, nesterovs_momentum=True,
-    early_stopping=True, validation_fraction=0.35, beta_1=0.9, beta_2=0.9, epsilon=1e-08, n_iter_no_change=10)
+    tol=0.0001, verbose=True, warm_start=False, momentum=0.9, nesterovs_momentum=True,
+    early_stopping=True, validation_fraction=0.1, beta_1=0.9, beta_2=0.9, epsilon=1e-08, n_iter_no_change=10)
 
-# print(solverAdamOptimisation.start(training_inputs, training_targets, testing_inputs, testing_targets))
+print(solverAdamOptimisation.start(training_inputs, training_targets, testing_inputs, testing_targets))
 
-mlp_adam.fit(training_inputs, training_targets)
+'''mlp_adam.fit(training_inputs, training_targets)
 predictions = mlp_adam.predict(testing_inputs)
 
-'''for index in range(len(predictions)):
-    graph_ecg_and_doppler(X, predictions[index], testing_inputs[index], str(index))'''
+for index in range(len(predictions)):
+    graph_ecg_and_doppler(X, predictions[index], testing_inputs[index], str(index))
 
 graph_predictions(mlp_adam, testing_inputs=testing_inputs, testing_targets=testing_targets, x=X, rows=5, columns=7)
-evaluate_performance(mlp_adam, testing_inputs, testing_targets, training_inputs, training_targets)
+evaluate_performance(mlp_adam, testing_inputs, testing_targets, training_inputs, training_targets)'''
 
 
 
