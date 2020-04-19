@@ -13,27 +13,45 @@ inputs = np.load("inputs.npy")
 targets = np.load("targets.npy")
 X = np.load("x.npy")
 
+
+#temp_inputs = np.delete(inputs, [77,79,90], 0)
+#temp_targets = np.delete(targets, [77,79,90], 0)
+
+#inputs = temp_inputs
+#targets = temp_targets
+
+
 input_mean = np.mean(inputs)
 input_std = np.std(inputs)
 
 
-print(inputs[1])
 
+#Normalizing the ecg data
 for rownumber, rows  in enumerate(inputs):
     inputs[rownumber] = (rows - input_mean) / input_std
 
-print(inputs[1])
 
 
 # Split into train and test
-training_inputs, testing_inputs, training_targets, testing_targets = train_test_split(inputs, targets, test_size=0.3)
+training_inputs, testing_inputs, training_targets, testing_targets = train_test_split(inputs, targets, test_size=0.3,random_state=38)
+
 
 # Init MLP regressor, add parameter random_state if you want to use same portion
+
 mlp_adam = MLPRegressor(
-    hidden_layer_sizes=(83,), activation='tanh', solver='adam', alpha=0.999, batch_size='auto',
+    hidden_layer_sizes=(100,), activation='relu', solver='adam', alpha=0.999, batch_size='auto',
     learning_rate='constant', learning_rate_init=0.01, power_t=0.5, max_iter=100, shuffle=True,
     tol=0.0001, verbose=False, warm_start=False, momentum=0.9, nesterovs_momentum=True,
     early_stopping=True, validation_fraction=0.3, beta_1=0.1, beta_2=0.1, epsilon=1e-08, n_iter_no_change=59)
+
+#Bara värden från en som funkade bra för mig
+'''
+mlp_adam = MLPRegressor(
+    hidden_layer_sizes=(137,), activation='relu', solver='adam', alpha=0.4421, batch_size='auto',
+    learning_rate='constant', learning_rate_init=0.01, power_t=0.5, max_iter=160, shuffle=True,
+    tol=0.0001, verbose=False, warm_start=False, momentum=0.9, nesterovs_momentum=True,
+    early_stopping=True, validation_fraction=0.2, beta_1=0.8, beta_2=0.3, epsilon=1e-08, n_iter_no_change=154)
+'''
 
 # Use solverAdamOptimisation to find good startparameters for adam solver (This step takes a long time)
 # Use solverSgdOptimisation if you want to use sgd solver
