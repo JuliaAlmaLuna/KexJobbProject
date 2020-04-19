@@ -3,12 +3,28 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from Mathilda.mlpcolordoppler.solverAdamOptimisation import start as adam_start
 from Mathilda.mlpcolordoppler import EvaluationFunctions as ef
+import warnings
+warnings.simplefilter(action='ignore', category=Warning)
+
 
 
 # Load inputs and targets from computer
-inputs = np.load("Mathilda/mlpcolordoppler/inputs.npy")
-targets = np.load("Mathilda/mlpcolordoppler/targets.npy")
-X = np.load("Mathilda/mlpcolordoppler/x.npy")
+inputs = np.load("inputs.npy")
+targets = np.load("targets.npy")
+X = np.load("x.npy")
+
+input_mean = np.mean(inputs)
+input_std = np.std(inputs)
+
+
+print(inputs[1])
+
+for rownumber, rows  in enumerate(inputs):
+    inputs[rownumber] = (rows - input_mean) / input_std
+
+print(inputs[1])
+
+
 # Split into train and test
 training_inputs, testing_inputs, training_targets, testing_targets = train_test_split(inputs, targets, test_size=0.3)
 
@@ -24,7 +40,7 @@ mlp_adam = MLPRegressor(
 # This step can be done multiple times
 message, optimized_mlp = adam_start(training_inputs, training_targets, testing_inputs, testing_targets, mlp_adam)
 print(message)
-text_file = open("Mathilda/mlpcolordoppler/mlp_parameters.txt", "w")
+text_file = open("mlp_parameters.txt", "w")
 n = text_file.write(message)
 text_file.close()
 # Saving parameters so we can update the init of MLP regressor if we want to run script again
@@ -37,8 +53,8 @@ ef.graph_predictions(optimized_mlp, testing_inputs, testing_targets, X, rows=5, 
 evaluations = ef.evaluate_performance(optimized_mlp, testing_inputs, testing_targets, training_inputs, training_targets,
                         message="Trial run 1")
 print(evaluations)
-text_file2 = open("Mathilda/mlpcolordoppler/mlp_performance.txt", "w")
-n2 = text_file.write(evaluations)
+text_file2 = open("mlp_performance.txt", "w")
+n2 = text_file2.write(evaluations)
 text_file2.close()
 
 
