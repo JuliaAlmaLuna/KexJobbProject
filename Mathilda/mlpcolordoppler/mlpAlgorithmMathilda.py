@@ -9,9 +9,9 @@ warnings.simplefilter(action='ignore', category=Warning)
 
 
 # Load inputs and targets from computer
-inputs = np.load("inputs.npy")
-targets = np.load("targets.npy")
-X = np.load("x.npy")
+inputs = np.load("Mathilda/mlpcolordoppler/inputs.npy")
+targets = np.load("Mathilda/mlpcolordoppler/targets.npy")
+X = np.load("Mathilda/mlpcolordoppler/x.npy")
 
 
 #temp_inputs = np.delete(inputs, [77,79,90], 0)
