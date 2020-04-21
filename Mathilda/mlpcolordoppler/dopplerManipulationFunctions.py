@@ -42,11 +42,12 @@ def create_interpolation_function_ecg_v(ecg, v, min_x, max_x, sample_number):
     return f_ecg, f_v, x
 
 
-def init_file_names(number_of_samples, file_folder_, suffix):
+# Changed to be accomodate partition of data in good, medium and shit
+def init_file_names(file_folder_, suffix, index_array):
     file_names_ = []
 
-    for index in range(number_of_samples):
-        string = file_folder_ + str(index+1) + suffix
+    for index in index_array:
+        string = file_folder_ + str(index) + suffix
         file_names_.append(string)
     return file_names_
 
