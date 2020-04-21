@@ -49,14 +49,23 @@ def get_data(f_names, sample_number=0):
 
     for name in f_names:
         if sample_number == 0:
-            f_ecg, f_trace2, f_trace3, x = create_interpolation_function_3trace(name, 0.02, 2.31, 950)
+            f_ecg, f_trace2, f_trace3, x = create_interpolation_function_3trace(name, 950)
         else:
-            f_ecg, f_trace2, f_trace3, x = create_interpolation_function_3trace(name, 0.02, 2.31, sample_number)
-        input_ = np.array(f_trace2) + np.array(f_trace3)
+            f_ecg, f_trace2, f_trace3, x = create_interpolation_function_3trace(name, sample_number)
+        input_ = (np.array(f_trace2(x)) + np.array(f_trace3(x))) / 2.0
         targets.append(f_ecg(x))
-        inputs.append()
+        inputs.append(input_)
 
     targets = np.array(targets)
     inputs = np.array(inputs)
     return targets, inputs, x
+
+
+def init_file_names(number_of_samples, file_folder_, suffix):
+    file_names_ = []
+
+    for index in range(number_of_samples):
+        string = file_folder_ + str(index+1) + suffix
+        file_names_.append(string)
+    return file_names_
 
