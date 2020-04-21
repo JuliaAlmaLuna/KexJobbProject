@@ -10,7 +10,7 @@ from scipy.stats import pearsonr
 from Mathilda.mlpcolordoppler import EvaluationFunctions as ef
 from Mathilda.mlpcolordoppler import solverAdamOptimisation as adam
 
-number_of_files = 2 # TODO: set correct amount of saved files
+number_of_files = 5 # TODO: set correct amount of saved files
 
 
 def evaluate_performance(mlp, testing_inputs, testing_targets, training_inputs, training_targets, message=""):
@@ -92,8 +92,8 @@ def decrease_array_size_less_pixels(videos, average_of):
     print(np.shape(less_pixels_video))
 
 
-videos = load_files_to_one_array("ArrayEcgAndVideo2/video_list", number_of_files) # TODO: set right path
-ecg = load_files_to_one_array("ArrayEcgAndVideo2/ecg_list", number_of_files)
+videos = load_files_to_one_array("ArrayEcgAndVideo8/video_list", number_of_files) # TODO: set right path
+ecg = load_files_to_one_array("ArrayEcgAndVideo8/ecg_list", number_of_files)
 # TODO: Call either decrese method and update videos and ecg with them (This will most likely take a while)
 
 print(np.shape(videos))
@@ -101,6 +101,9 @@ print(np.shape(videos))
 
 ecg = np.squeeze(ecg)
 print(np.shape(ecg))
+
+#Testing out a resize to make it clump together ecg parts
+#np.reshape(ecg, [np.size(ecg)/3,3])
 
 
 training_inputs, testing_inputs, training_targets, testing_targets = train_test_split(videos, ecg, test_size=0.3, random_state=66)
@@ -112,19 +115,20 @@ print(np.shape(testing_inputs))
 
 
 mlp_adam = MLPRegressor(
-    hidden_layer_sizes=(300,), activation='tanh', solver='adam', alpha=0.01, batch_size='auto',
-    learning_rate='constant', learning_rate_init=0.01, power_t=0.5, max_iter=1000, shuffle=True,
-    random_state=45, tol=0.0000001, verbose=True, warm_start=False, momentum=0.9, nesterovs_momentum=True,
+    hidden_layer_sizes=(300,), activation='tanh', solver='adam', alpha=0.1, batch_size='auto',
+    learning_rate='constant', learning_rate_init=0.01, power_t=0.5, max_iter=100, shuffle=True,
+    random_state=45, tol=0.00001, verbose=False, warm_start=False, momentum=0.9, nesterovs_momentum=True,
     early_stopping=True, validation_fraction=0.1, beta_1=0.3, beta_2=0.5, epsilon=1e-08)
 
 
 
-
+print("HEYA")
 
 # Use solverAdamOptimisation to find good startparameters for adam solver (This step takes a long time)
 # Use solverSgdOptimisation if you want to use sgd solver
 # This step can be done multiple times
 message, optimized_mlp = adam.start(training_inputs, training_targets, testing_inputs, testing_targets, mlp_adam)
+print("oom")
 print(message)
 text_file = open("mlp_video_parameters.txt", "w")
 n = text_file.write(message)

@@ -6,10 +6,10 @@ import numpy as np
 # And using image division value you can make the image smaller using div*div square averaging
 # Reducing height and width of the frames by div
 
-div = 4
+div = 8
 
-for t in range(0,2):
-
+for t in range(0, 20):
+    print(t)
     file_folder = "Julia/ecg_folder/Pat"
     ecg_suffix = "_3Trace.txt"
     avi_suffix1 = "_Vi.avi"
@@ -28,7 +28,7 @@ for t in range(0,2):
 
     #n_video_list = dmf.listOfVidsToListOfNestedPixelList(videoList)
 
-    n_video_list, n_ecg_list = dmf.createVidInputsAndTargetEcgs(videoList, ecgList, div)
+    n_video_list, n_ecg_list, ecg_x_list = dmf.createVidInputsAndTargetEcgs(videoList, ecgList, div)
 
 
 

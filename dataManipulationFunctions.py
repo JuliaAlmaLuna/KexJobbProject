@@ -46,7 +46,7 @@ def import_td_text_file(fname):
 # Function to import TD+ECG data from txt file
 def import_td_text_file_ecg(fname):
     max_rows = find_max_rows_3Trace(fname)
-    print(max_rows)
+    print("max rows:{}".format(max_rows))
     ecg1 = np.loadtxt(fname, skiprows=3, usecols=(4, 5), max_rows=max_rows)
     ecg2 = np.loadtxt(fname, skiprows=max_rows + 3)
     ecg = np.concatenate((ecg1, ecg2), axis=0)
@@ -235,14 +235,15 @@ def imgToList(imageString, divideSize = 1):
     for x in range(int(img_width/divideSize)):
         for y in range(int(img_height/divideSize)):
             pixelsInNewPixel = 0
+            TempPixelBrightness = 0
             for z in range(divideSize):
                 for u in range(divideSize):
                     if belongs_to_ultrasound(x*divideSize+z,y*divideSize+u):
-                        TempPixelBrightness = TempPixelBrightness + int(imag.getpixel((x, y)))  # Retreives the pixel value of the pixel and adds it.
+                        TempPixelBrightness = TempPixelBrightness + int(imag.getpixel((x*divideSize+z, y*divideSize+u)))  # Retreives the pixel value of the pixel and adds it.
                         pixelsInNewPixel = pixelsInNewPixel + 1
             if pixelsInNewPixel > 0:
-                TempPixelBrightness = TempPixelBrightness/pixelsInNewPixel
-                pixelList.append(TempPixelBrightness)
+                TempPixelBrightness2 = TempPixelBrightness/pixelsInNewPixel
+                pixelList.append(TempPixelBrightness2)
 
 
 
@@ -274,8 +275,28 @@ def vidToNestedPixelList(video, div):
         temp = imgToList("data/frame%d.jpg" %frame, div)
         nestedPixelList.append(temp)
 
-    return nestedPixelList
+    temp2 = imgToDerivateOfImg(nestedPixelList)
 
+    # Normalizing the ecg data
+    input_mean = np.mean(temp2)
+    input_std = np.std(temp2)
+
+    for rownumber, rows in enumerate(temp2):
+        temp2[rownumber] = (rows - input_mean) / input_std
+
+    return temp2
+    #return nestedPixelList
+'''
+
+temp2 = imgToDerivateOfImg(temp)
+
+# Normalizing the ecg data
+input_mean = np.mean(temp2)
+input_std = np.std(temp2)
+
+for rownumber, rows in enumerate(temp2):
+    temp2[rownumber] = (rows - input_mean) / input_std
+'''
 
 def listOfVidsToListOfNestedPixelList(videoList):
     video_list = []
@@ -297,7 +318,7 @@ def createVidInputsAndTargetEcgs(videoList, ecgList, div):
         ecg_list.append(temp2)
         time_list.append(tempx)
 
-    return vid_list, ecg_list
+    return vid_list, ecg_list, time_list
 
 
 # Gets the derivate of the pixel values in regards to next and previous frame
@@ -306,8 +327,7 @@ def imgToDerivateOfImg(imgList):
     temp_list = imgList
 
     for img_number,img in enumerate(imgList, 1):
-        print(len(temp_list) - 2)
-        for pixel_number, pixel in enumerate(img,0):
+        for pixel_number, pixel in enumerate(img ,0):
             if img_number > len(temp_list)-2:
                 temp_list[img_number-1][pixel_number] = temp_list[img_number-2][pixel_number]
                 temp_list[0][pixel_number] = temp_list[1][pixel_number]

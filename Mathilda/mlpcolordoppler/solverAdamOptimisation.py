@@ -6,8 +6,9 @@ from sklearn.metrics import mean_squared_error
 def start(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp):
     mlp.fit(training_inputs_, training_targets_)
 
-    activation = find_best_activation(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
-    mlp.set_params(activation=activation)
+    # This one changes so much, and does it without knowing how well it will fare with the different parameters. Should we really put it first, or in this function. Maybe a separate function
+   # activation = find_best_activation(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
+   # mlp.set_params(activation=activation)
 
     learning_rate = find_best_learning_rate(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
     mlp.set_params(learning_rate_init=learning_rate)
@@ -56,7 +57,7 @@ def find_best_activation(training_inputs_, training_targets_, testing_inputs_, t
 def find_best_learning_rate(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp):
     best_MSE = 10000
     best_lr = 0
-    for lr in np.arange(0.0001, 10, 0.001):
+    for lr in np.arange(0.001, 1, 0.05):
         mlp.set_params(learning_rate_init=lr)
         mlp.fit(training_inputs_, training_targets_)
         score = mean_squared_error(testing_targets_, mlp.predict(testing_inputs_))
