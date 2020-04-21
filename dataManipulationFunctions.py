@@ -311,6 +311,7 @@ def createVidInputsAndTargetEcgs(videoList, ecgList, div):
     ecg_list = []
     time_list = []
 
+    
     for i, video in enumerate(videoList):
         temp = vidToNestedPixelList(video, div)
         temp2, tempx = get_data_ecg2(ecgList[i], len(temp))

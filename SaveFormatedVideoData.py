@@ -6,10 +6,11 @@ import numpy as np
 # And using image division value you can make the image smaller using div*div square averaging
 # Reducing height and width of the frames by div
 
-div = 8
+div = 4
 
 for t in range(0, 20):
     print(t)
+
     file_folder = "Julia/ecg_folder/Pat"
     ecg_suffix = "_3Trace.txt"
     avi_suffix1 = "_Vi.avi"

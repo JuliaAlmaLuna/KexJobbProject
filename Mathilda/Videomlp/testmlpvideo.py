@@ -121,14 +121,11 @@ mlp_adam = MLPRegressor(
     early_stopping=True, validation_fraction=0.1, beta_1=0.3, beta_2=0.5, epsilon=1e-08)
 
 
-
-print("HEYA")
-
 # Use solverAdamOptimisation to find good startparameters for adam solver (This step takes a long time)
 # Use solverSgdOptimisation if you want to use sgd solver
 # This step can be done multiple times
 message, optimized_mlp = adam.start(training_inputs, training_targets, testing_inputs, testing_targets, mlp_adam)
-print("oom")
+
 print(message)
 text_file = open("mlp_video_parameters.txt", "w")
 n = text_file.write(message)
