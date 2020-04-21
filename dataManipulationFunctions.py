@@ -222,20 +222,33 @@ def belongs_to_ultrasound(x, y):
         return False
 
 
-def imgToList(imageString):
+def imgToList(imageString, divideSize = 1):
     imag = Image.open(imageString)
     # Convert the image te Greyscale if it is a .gif for example
     imag = imag.convert('L')
 
     pixelList = []
-
+    TempPixelBrightness = 0
+    #Changed this function so that it can reduce the size of orig image by averaging.
     # Get RGB
     img_width, img_height = imag.size
-    for x in range(img_width):
-        for y in range(img_height):
-            if belongs_to_ultrasound(x, y):
-                pixelBrightness = int(imag.getpixel((x, y))) # Retreives the pixel value of the pixel.
-                pixelList.append(pixelBrightness)
+    for x in range(int(img_width/divideSize)):
+        for y in range(int(img_height/divideSize)):
+            pixelsInNewPixel = 0
+            for z in range(divideSize):
+                for u in range(divideSize):
+                    if belongs_to_ultrasound(x*divideSize+z,y*divideSize+u):
+                        TempPixelBrightness = TempPixelBrightness + int(imag.getpixel((x, y)))  # Retreives the pixel value of the pixel and adds it.
+                        pixelsInNewPixel = pixelsInNewPixel + 1
+            if pixelsInNewPixel > 0:
+                TempPixelBrightness = TempPixelBrightness/pixelsInNewPixel
+                pixelList.append(TempPixelBrightness)
+
+
+
+            #if belongs_to_ultrasound(x, y):
+            #    pixelBrightness = int(imag.getpixel((x, y))) # Retreives the pixel value of the pixel.
+            #    pixelList.append(pixelBrightness)
 
     return pixelList
 
@@ -252,13 +265,13 @@ def reduceImgSize(ListOfPixels, fraction):
         new_ListOfPixels.extend(temp)
 
 
-def vidToNestedPixelList(video):
+def vidToNestedPixelList(video, div):
     imageString, amount = vidToImg(video)
 
     nestedPixelList = []
 
     for frame in range(amount):
-        temp = imgToList("data/frame%d.jpg" %frame)
+        temp = imgToList("data/frame%d.jpg" %frame, div)
         nestedPixelList.append(temp)
 
     return nestedPixelList
@@ -272,13 +285,13 @@ def listOfVidsToListOfNestedPixelList(videoList):
     return video_list
 
 
-def createVidInputsAndTargetEcgs(videoList, ecgList):
+def createVidInputsAndTargetEcgs(videoList, ecgList, div):
     vid_list = []
     ecg_list = []
     time_list = []
 
     for i, video in enumerate(videoList):
-        temp = vidToNestedPixelList(video)
+        temp = vidToNestedPixelList(video, div)
         temp2, tempx = get_data_ecg2(ecgList[i], len(temp))
         vid_list.append(temp)
         ecg_list.append(temp2)
@@ -311,18 +324,6 @@ def discretizeECG(ecg):
         temp[x] = int(round(ecgVal))
 
     return temp
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # Den blev en blandning av interpolering och inte interpolering.

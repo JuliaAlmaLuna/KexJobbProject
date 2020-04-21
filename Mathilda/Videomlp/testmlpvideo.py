@@ -1,10 +1,45 @@
 import numpy as np
+import dataManipulationFunctions as dmf
 from sklearn.model_selection import train_test_split
 from sklearn.neural_network import MLPRegressor
-from Mathilda.mlpcolordoppler.mlpAlgorithmMathilda import evaluate_performance
+from sklearn.preprocessing import normalize
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import explained_variance_score
+from sklearn.metrics import max_error
+from scipy.stats import pearsonr
+from Mathilda.mlpcolordoppler import EvaluationFunctions as ef
+from Mathilda.mlpcolordoppler import solverAdamOptimisation as adam
 
-number_of_files = 30 # TODO: set correct amount of saved files
+number_of_files = 2 # TODO: set correct amount of saved files
 
+
+def evaluate_performance(mlp, testing_inputs, testing_targets, training_inputs, training_targets, message=""):
+    train_prediction = mlp.predict(training_inputs)
+    test_prediction = mlp.predict(testing_inputs)
+    r2_score_ = mlp.score(testing_inputs, testing_targets)
+    ev_score = explained_variance_score(testing_inputs, test_prediction, multioutput='uniform_average')
+    train_mse = mean_squared_error(training_targets, train_prediction)
+    test_mse = mean_squared_error(testing_targets, test_prediction)
+
+    total = 0  # Finding the mean pearson score of testing data
+    for index in range(len(testing_inputs)):
+        pearson_corr, _ = pearsonr(testing_targets[index, :], test_prediction[index, :])
+        total = total + pearson_corr
+    pearson = total/len(testing_inputs)
+
+    curr_max = 0  # Finding the maximum error in all the training data
+    for index in range(len(testing_inputs)):
+        max_error_ = max_error(testing_targets[index, :], test_prediction[index, :])
+        if max_error_ > curr_max:
+            curr_max = max_error_
+
+    print(message)
+    print("__________________________________________________________________________")
+    print("R2 score:\t\t\t" + str(r2_score_) + "\t\t\tGoal: positive & close to 1" + "\ntest MSE:\t\t\t" + str(test_mse)
+          + "\t\t\tGoal: lower than train MSE" + "\ntrain MSE:\t\t\t" + str(train_mse) + "\nEVS, ua:\t\t\t" +
+          str(ev_score) + "\t\t\tGoal: Same as R2" + "\nMax error:\t\t\t" + str(curr_max) +
+          "\t\t\tGoal: As low as possible" + "\nPearson:\t\t\t" + str(pearson) + "\t\t\tGoal: close to 1")
+    print("__________________________________________________________________________")
 
 def load_files_to_one_array(name_of_files, amount_of_files):
     array = []
@@ -13,7 +48,16 @@ def load_files_to_one_array(name_of_files, amount_of_files):
         name = name_of_files + str(index) + ".npy"
         array_piece = np.load(name, allow_pickle=True)
         array.extend(array_piece)
+
+
     array = np.array(array)
+
+
+
+    #if np.size(array)%238576 == 0:
+    #    array.reshape([int(np.size(array)/238576), 238576])
+
+
     return array
 
 
@@ -48,19 +92,65 @@ def decrease_array_size_less_pixels(videos, average_of):
     print(np.shape(less_pixels_video))
 
 
-videos = load_files_to_one_array("../video_list", number_of_files) # TODO: set right path
-ecg = load_files_to_one_array("../ecg_list", number_of_files)
+videos = load_files_to_one_array("ArrayEcgAndVideo2/video_list", number_of_files) # TODO: set right path
+ecg = load_files_to_one_array("ArrayEcgAndVideo2/ecg_list", number_of_files)
 # TODO: Call either decrese method and update videos and ecg with them (This will most likely take a while)
+
+print(np.shape(videos))
+
+
+ecg = np.squeeze(ecg)
+print(np.shape(ecg))
+
 
 training_inputs, testing_inputs, training_targets, testing_targets = train_test_split(videos, ecg, test_size=0.3, random_state=66)
 
-mlp = MLPRegressor(
-    hidden_layer_sizes=(96,), activation='tanh', solver='adam', alpha=0.4211, batch_size='auto',
+print(np.shape(training_inputs))
+print(np.shape(testing_targets))
+print(np.shape(training_targets))
+print(np.shape(testing_inputs))
+
+
+mlp_adam = MLPRegressor(
+    hidden_layer_sizes=(300,), activation='tanh', solver='adam', alpha=0.01, batch_size='auto',
     learning_rate='constant', learning_rate_init=0.01, power_t=0.5, max_iter=1000, shuffle=True,
-    random_state=45, tol=0.0001, verbose=True, warm_start=True, momentum=0.9, nesterovs_momentum=True,
+    random_state=45, tol=0.0000001, verbose=True, warm_start=False, momentum=0.9, nesterovs_momentum=True,
     early_stopping=True, validation_fraction=0.1, beta_1=0.3, beta_2=0.5, epsilon=1e-08)
 
-mlp.fit(training_inputs, training_targets)
-evaluate_performance(mlp, testing_inputs, testing_targets, training_inputs, training_targets, message="")
+
+
+
+
+# Use solverAdamOptimisation to find good startparameters for adam solver (This step takes a long time)
+# Use solverSgdOptimisation if you want to use sgd solver
+# This step can be done multiple times
+message, optimized_mlp = adam.start(training_inputs, training_targets, testing_inputs, testing_targets, mlp_adam)
+print(message)
+text_file = open("mlp_video_parameters.txt", "w")
+n = text_file.write(message)
+text_file.close()
+# Saving parameters so we can update the init of MLP regressor if we want to run script again
+
+# Fit the MLP with the new parameters
+optimized_mlp.fit(training_inputs, training_targets)
+
+# Check performance of MLPRegressor, message is text over evaluation that will store in .txt document
+
+
+#! HERE FIX AN X !
+#ef.graph_predictions(optimized_mlp, testing_inputs, testing_targets, X, rows=5, columns=6)
+
+
+
+evaluations = ef.evaluate_performance(optimized_mlp, testing_inputs, testing_targets, training_inputs, training_targets,
+                        message="Trial run 1")
+print(evaluations)
+text_file2 = open("mlp__video_performance.txt", "w")
+n2 = text_file2.write(evaluations)
+text_file2.close()
+
+#mlp.fit(training_inputs, training_targets)
+#ef.evaluate_performance(mlp, testing_inputs, testing_targets, training_inputs, training_targets, message="")
+
 
 
