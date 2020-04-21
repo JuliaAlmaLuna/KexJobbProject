@@ -9,8 +9,8 @@ warnings.simplefilter(action='ignore', category=Warning)
 
 
 # Load inputs and targets from computer
-inputs = np.load("Mathilda/mlpcolordoppler/inputs.npy")
-targets = np.load("Mathilda/mlpcolordoppler/targets.npy")
+inputs = np.load("Mathilda/mlpcolordoppler/inputs_good_medium.npy")
+targets = np.load("Mathilda/mlpcolordoppler/targets_good_medium.npy")
 X = np.load("Mathilda/mlpcolordoppler/x.npy")
 
 
@@ -56,11 +56,9 @@ mlp_adam = MLPRegressor(
 # Use solverAdamOptimisation to find good startparameters for adam solver (This step takes a long time)
 # Use solverSgdOptimisation if you want to use sgd solver
 # This step can be done multiple times
-message, optimized_mlp = adam_start(training_inputs, training_targets, testing_inputs, testing_targets, mlp_adam)
-print(message)
+optimized_mlp = adam_start(training_inputs, training_targets, testing_inputs, testing_targets, mlp_adam)
 text_file = open("mlp_parameters.txt", "w")
-n = text_file.write(message)
-text_file.close()
+n = text_file.write(optimized_mlp.get_params)
 # Saving parameters so we can update the init of MLP regressor if we want to run script again
 
 # Fit the MLP with the new parameters
@@ -71,9 +69,8 @@ ef.graph_predictions(optimized_mlp, testing_inputs, testing_targets, X, rows=5, 
 evaluations = ef.evaluate_performance(optimized_mlp, testing_inputs, testing_targets, training_inputs, training_targets,
                         message="Trial run 1")
 print(evaluations)
-text_file2 = open("mlp_performance.txt", "w")
-n2 = text_file2.write(evaluations)
-text_file2.close()
+n = text_file.write(evaluations)
+text_file.close()
 
 
 

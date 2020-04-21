@@ -3,6 +3,7 @@ from sklearn.metrics import mean_squared_error
 from sklearn.metrics import explained_variance_score
 from sklearn.metrics import max_error
 from scipy.stats import pearsonr
+from Mathilda.mlpcolordoppler.dopplerManipulationFunctions import savgol_filter_ecg
 
 
 def graph_predictions(mlp, testing_inputs, testing_targets, x, rows, columns):
@@ -13,9 +14,13 @@ def graph_predictions(mlp, testing_inputs, testing_targets, x, rows, columns):
         for index in range(size):
             prediction = mlp.predict(testing_inputs[index, :].reshape(1, -1))
             true = testing_targets[index, :]
-            plt.subplot(rows, columns, index+1)
-            plt.plot(x, true, 'g')
-            plt.plot(x, prediction[0, :], 'r')
+            ax1 = plt.subplot(rows, columns, index+1)
+            ax1.plot(x, testing_inputs[index], 'y')
+
+            ax2 = ax1.twinx()
+            ax2.plot(x, true, 'g')
+            ax2.plot(x, prediction[0, :], 'r')
+
         plt.show()
 
 

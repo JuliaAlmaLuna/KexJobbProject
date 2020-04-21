@@ -33,9 +33,7 @@ def start(training_inputs_, training_targets_, testing_inputs_, testing_targets_
     epoch = find_best_epoch(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
     mlp.set_params(max_iter=epoch)
 
-    message = "Here are your parameters: \nBeta1: " + str(beta1) + " Beta2: " + str(beta2) + "\nLayer size: " +\
-              str(layer_size) + "\nalpha: " + str(alpha) + "\nval frac: " + str(val_frac) + "\nn_iter_no_change: " + str(epoch)
-    return message, mlp
+    return mlp
 
 
 def find_best_activation(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp):
