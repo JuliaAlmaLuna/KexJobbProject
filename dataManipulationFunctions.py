@@ -4,6 +4,7 @@ import cv2
 import os
 from PIL import Image
 from math import sqrt
+from itertools import islice
 
 
 # Help function for import td txt file - finds where there are no longer 4 columns by throwing exception
@@ -266,7 +267,7 @@ def reduceImgSize(ListOfPixels, fraction):
         new_ListOfPixels.extend(temp)
 
 
-def vidToNestedPixelList(video, div):
+def vidToNestedPixelList(video, div, derivesize = 1):
     imageString, amount = vidToImg(video)
 
     nestedPixelList = []
@@ -275,7 +276,7 @@ def vidToNestedPixelList(video, div):
         temp = imgToList("data/frame%d.jpg" %frame, div)
         nestedPixelList.append(temp)
 
-    temp2 = imgToDerivateOfImg(nestedPixelList)
+    temp2 = imgToDerivateOfImg(nestedPixelList, derivesize)
 
     # Normalizing the ecg data
     input_mean = np.mean(temp2)
@@ -306,15 +307,15 @@ def listOfVidsToListOfNestedPixelList(videoList):
     return video_list
 
 
-def createVidInputsAndTargetEcgs(videoList, ecgList, div):
+def createVidInputsAndTargetEcgs(videoList, ecgList, div, deriveSize = 1):
     vid_list = []
     ecg_list = []
     time_list = []
 
-    
+
     for i, video in enumerate(videoList):
-        temp = vidToNestedPixelList(video, div)
-        temp2, tempx = get_data_ecg2(ecgList[i], len(temp))
+        temp = vidToNestedPixelList(video, div, deriveSize)
+        temp2, tempx = get_data_ecg2(ecgList[i], len(temp)*deriveSize)
         vid_list.append(temp)
         ecg_list.append(temp2)
         time_list.append(tempx)
@@ -323,10 +324,10 @@ def createVidInputsAndTargetEcgs(videoList, ecgList, div):
 
 
 # Gets the derivate of the pixel values in regards to next and previous frame
-def imgToDerivateOfImg(imgList):
+def imgToDerivateOfImg(imgList, deriveSize = 1):
 
     temp_list = imgList
-
+    '''
     for img_number,img in enumerate(imgList, 1):
         for pixel_number, pixel in enumerate(img ,0):
             if img_number > len(temp_list)-2:
@@ -334,6 +335,22 @@ def imgToDerivateOfImg(imgList):
                 temp_list[0][pixel_number] = temp_list[1][pixel_number]
             else:
                 temp_list[img_number][pixel_number] = imgList[img_number+1][pixel_number] -  imgList[img_number-1][pixel_number]
+    '''
+
+    count = 1
+    for img_number, img in enumerate(imgList, 1):
+        if(img_number%deriveSize == 0):
+            for pixel_number, pixel in enumerate(img, 0):
+                if img_number > len(temp_list) - 2:
+                    temp_list[img_number - 1][pixel_number] = temp_list[img_number - 2][pixel_number]
+                    temp_list[0][pixel_number] = temp_list[1][pixel_number]
+                else:
+                    temp_list[count][pixel_number] = imgList[count + deriveSize][pixel_number] - imgList[count - deriveSize][
+                        pixel_number]
+            count = count +1
+
+    for times in range(count-1):
+        temp_list.pop()
 
     return temp_list
 

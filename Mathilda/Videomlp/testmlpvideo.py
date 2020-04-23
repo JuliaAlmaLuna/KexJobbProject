@@ -10,7 +10,10 @@ from scipy.stats import pearsonr
 from Mathilda.mlpcolordoppler import EvaluationFunctions as ef
 from Mathilda.mlpcolordoppler import solverAdamOptimisation as adam
 
-number_of_files = 5 # TODO: set correct amount of saved files
+import warnings
+warnings.simplefilter(action='ignore', category=Warning)
+
+number_of_files = 10 # TODO: set correct amount of saved files
 
 
 def evaluate_performance(mlp, testing_inputs, testing_targets, training_inputs, training_targets, message=""):
@@ -44,7 +47,7 @@ def evaluate_performance(mlp, testing_inputs, testing_targets, training_inputs, 
 def load_files_to_one_array(name_of_files, amount_of_files):
     array = []
 
-    for index in range(1, amount_of_files+1):
+    for index in range(2, amount_of_files+1):
         name = name_of_files + str(index) + ".npy"
         array_piece = np.load(name, allow_pickle=True)
         array.extend(array_piece)
@@ -92,15 +95,16 @@ def decrease_array_size_less_pixels(videos, average_of):
     print(np.shape(less_pixels_video))
 
 
-videos = load_files_to_one_array("ArrayEcgAndVideo8/video_list", number_of_files) # TODO: set right path
-ecg = load_files_to_one_array("ArrayEcgAndVideo8/ecg_list", number_of_files)
+videos = load_files_to_one_array("ArrayEcgAndVideo8c/video_list", number_of_files) # TODO: set right path
+ecg = load_files_to_one_array("ArrayEcgAndVideo8c/ecg_list", number_of_files)
 # TODO: Call either decrese method and update videos and ecg with them (This will most likely take a while)
 
 print(np.shape(videos))
 
-
 ecg = np.squeeze(ecg)
 print(np.shape(ecg))
+
+ecg = np.reshape(ecg, [np.size(videos,0), 4])
 
 #Testing out a resize to make it clump together ecg parts
 #np.reshape(ecg, [np.size(ecg)/3,3])
@@ -115,15 +119,16 @@ print(np.shape(testing_inputs))
 
 
 mlp_adam = MLPRegressor(
-    hidden_layer_sizes=(300,), activation='tanh', solver='adam', alpha=0.1, batch_size='auto',
-    learning_rate='constant', learning_rate_init=0.01, power_t=0.5, max_iter=100, shuffle=True,
-    random_state=45, tol=0.00001, verbose=False, warm_start=False, momentum=0.9, nesterovs_momentum=True,
-    early_stopping=True, validation_fraction=0.1, beta_1=0.3, beta_2=0.5, epsilon=1e-08)
+    hidden_layer_sizes=(500,), activation='tanh', solver='adam', alpha=0.4, batch_size='auto',
+    learning_rate='constant', learning_rate_init=0.01, power_t=0.5, max_iter=50, shuffle=True,
+    random_state=45, tol=0.000001, verbose=True, warm_start=False, momentum=0.9, nesterovs_momentum=True,
+    early_stopping=True, validation_fraction=0.1, beta_1=0.5, beta_2=0.2, epsilon=1e-08, n_iter_no_change=10)
 
 
 # Use solverAdamOptimisation to find good startparameters for adam solver (This step takes a long time)
 # Use solverSgdOptimisation if you want to use sgd solver
 # This step can be done multiple times
+'''
 message, optimized_mlp = adam.start(training_inputs, training_targets, testing_inputs, testing_targets, mlp_adam)
 
 print(message)
@@ -133,7 +138,10 @@ text_file.close()
 # Saving parameters so we can update the init of MLP regressor if we want to run script again
 
 # Fit the MLP with the new parameters
-optimized_mlp.fit(training_inputs, training_targets)
+'''
+
+mlp_adam.fit(training_inputs, training_targets)
+#optimized_mlp.fit(training_inputs, training_targets)
 
 # Check performance of MLPRegressor, message is text over evaluation that will store in .txt document
 
@@ -143,7 +151,9 @@ optimized_mlp.fit(training_inputs, training_targets)
 
 
 
-evaluations = ef.evaluate_performance(optimized_mlp, testing_inputs, testing_targets, training_inputs, training_targets,
+#evaluations = ef.evaluate_performance(optimized_mlp, testing_inputs, testing_targets, training_inputs, training_targets,
+#                        message="Trial run 1")
+evaluations = ef.evaluate_performance(mlp_adam, testing_inputs, testing_targets, training_inputs, training_targets,
                         message="Trial run 1")
 print(evaluations)
 text_file2 = open("mlp__video_performance.txt", "w")

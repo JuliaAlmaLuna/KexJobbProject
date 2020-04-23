@@ -6,9 +6,10 @@ import numpy as np
 # And using image division value you can make the image smaller using div*div square averaging
 # Reducing height and width of the frames by div
 
-div = 4
+div = 8
+derivesize = 4
 
-for t in range(0, 20):
+for t in range(1, 19):
     print(t)
 
     file_folder = "Julia/ecg_folder/Pat"
@@ -29,12 +30,13 @@ for t in range(0, 20):
 
     #n_video_list = dmf.listOfVidsToListOfNestedPixelList(videoList)
 
-    n_video_list, n_ecg_list, ecg_x_list = dmf.createVidInputsAndTargetEcgs(videoList, ecgList, div)
+    n_video_list, n_ecg_list, ecg_x_list = dmf.createVidInputsAndTargetEcgs(videoList, ecgList, div, derivesize)
 
 
 
     video_list = np.array(n_video_list)
     ecg_list = np.array(n_ecg_list)
+
 
 
 
@@ -44,7 +46,8 @@ for t in range(0, 20):
         rowlength = rowlength + len(n_video_list[i])
 
     video_numpy_correct_array = np.empty([rowlength, int(len(n_video_list[0][0]))])
-    ecg_numpy_correct_array = np.empty([rowlength, 1])
+    ecg_numpy_correct_array = np.empty([rowlength * derivesize, 1])
+    x_numpy_correct_array = np.empty([rowlength * derivesize, 1])
 
     count = 0
 
@@ -60,6 +63,12 @@ for t in range(0, 20):
             ecg_numpy_correct_array[count][0] = n_ecg_list[x][y]
             count = count + 1
 
+    count = 0
+    for x in range(len(ecg_x_list)):
+        for y in range(len(ecg_x_list[x])):
+            x_numpy_correct_array[count][0] = ecg_x_list[x][y]
+            count = count + 1
+
     print("ohnoo")
     print(video_numpy_correct_array .size)
     print(video_numpy_correct_array .shape)
@@ -70,5 +79,10 @@ for t in range(0, 20):
     print(ecg_numpy_correct_array .size)
     print(ecg_numpy_correct_array .shape)
 
+    print("ohrooo")
+    print(ecg_numpy_correct_array.size)
+    print(ecg_numpy_correct_array.shape)
+
     np.save("video_list{}".format(t+1), video_numpy_correct_array)
     np.save("ecg_list{}".format(t+1), ecg_numpy_correct_array)
+    np.save("x_list{}".format(t+1), x_numpy_correct_array)
