@@ -70,7 +70,7 @@ def reNormalizeData(data, data_norm):
 
 # create an interpolation function - range of function is from lowest value in file to highest value in file
 # for 2,3,4 & 5 max range is 0.02 to 2.31
-def create_interpolation_function(fname, min_x, max_x, sample_number):
+def create_interpolation_function(fname, sample_number):
     ecg, v = import_td_text_file(fname)
     vx = v[:, 0]
     vy = v[:, 1]
@@ -79,8 +79,8 @@ def create_interpolation_function(fname, min_x, max_x, sample_number):
     ecgy = ecg[:, 1]
     f_ecg = interp1d(ecgx, ecgy)
     # np.lins
-    min_x = ecgx[0]
-    max_x = ecgx[len(ecgx)-1]
+    min_x = ecg[0]
+    max_x = ecg[len(ecg)-1]
     x = np.linspace(min_x, max_x, sample_number)
     return f_ecg, f_v, x
 
