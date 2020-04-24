@@ -28,7 +28,7 @@ def evaluate_performance(mlp, testing_inputs, testing_targets, training_inputs, 
     train_prediction = mlp.predict(training_inputs)
     test_prediction = mlp.predict(testing_inputs)
     r2_score_ = mlp.score(testing_inputs, testing_targets)
-    ev_score = explained_variance_score(testing_inputs, test_prediction, multioutput='uniform_average')
+    ev_score = explained_variance_score(testing_targets, test_prediction, multioutput='uniform_average')
     train_mse = mean_squared_error(training_targets, train_prediction)
     test_mse = mean_squared_error(testing_targets, test_prediction)
 

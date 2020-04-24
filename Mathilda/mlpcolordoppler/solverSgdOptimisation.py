@@ -45,7 +45,7 @@ def start(training_inputs_, training_targets_, testing_inputs_, testing_targets_
 def find_best_activation(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp):
     best_MSE = 10000
     best_activation = 'none'
-    activations = ['tanh', 'relu', 'logistic']
+    activations = ['tanh', 'logistic']
     for activation in activations:
         mlp.set_params(activation=activation)
         mlp.fit(training_inputs_, training_targets_)

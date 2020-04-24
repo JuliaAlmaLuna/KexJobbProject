@@ -9,6 +9,7 @@ def start(training_inputs_, training_targets_, testing_inputs_, testing_targets_
     # This one changes so much, and does it without knowing how well it will fare with the different parameters. Should we really put it first, or in this function. Maybe a separate function
    # activation = find_best_activation(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
    # mlp.set_params(activation=activation)
+    # I think we have to try to optimize for each activation and see which one scores best!
 
     learning_rate = find_best_learning_rate(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
     mlp.set_params(learning_rate_init=learning_rate)

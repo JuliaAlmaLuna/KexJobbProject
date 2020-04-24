@@ -3,15 +3,21 @@ import dataManipulationFunctions as dmf
 import matplotlib.pyplot as plt
 import numpy as np
 
-file_folder = "ECG_Folder/"
-file_names = [file_folder + "2_ecg.txt", file_folder + "3_ecg.txt", file_folder + "4_ecg.txt", file_folder + "5_ecg.txt"]
-ecg, v = dmf.import_td_text_file(file_names[0])
-vx = v[:, 0]
-vy = v[:, 1]
-f = interp1d(vx, vy)
-x = np.linspace(0.02, 2.31904, 250)
-plt.plot(vx, vy, 'o', x, f(x), '-')
+targets = np.load("../mlpcolordoppler/targets_good_medium.npy")
+x = np.load("../mlpcolordoppler/x.npy")
+targets_old = np.array(targets)
 
+
+plt.plot(x, targets[0])
+plt.plot(x, targets_old[0])
+plt.show()
+
+plt.plot(x, targets[1])
+plt.plot(x, targets_old[1])
+plt.show()
+
+plt.plot(x, targets[3])
+plt.plot(x, targets_old[3])
 plt.show()
 
 
