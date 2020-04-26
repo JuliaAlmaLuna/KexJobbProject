@@ -5,6 +5,7 @@ import os
 from PIL import Image
 from math import sqrt
 from itertools import islice
+import math
 
 
 # Help function for import td txt file - finds where there are no longer 4 columns by throwing exception
@@ -88,7 +89,7 @@ def create_interpolation_function(fname, sample_number):
 
 # create an interpolation function - range of function is from lowest value in file to highest value in file
 # automatically finds min and max
-def create_interpolation_function_ecg(fname, sample_number):
+def create_interpolation_function_ecg(fname, deriveSize):
     ecg = import_td_text_file_ecg(fname)
     ecgx = ecg[:, 0]
     ecgy = ecg[:, 1]
@@ -96,7 +97,11 @@ def create_interpolation_function_ecg(fname, sample_number):
 
     min_x = ecgx[0]
     max_x = ecgx[len(ecgx)-1]
-    x = np.linspace(min_x, max_x, sample_number)
+
+    x_length = max_x - min_x
+
+    #x = np.linspace(min_x, max_x, sample_number)
+    x = np.linspace(min_x, max_x, int(256/deriveSize))
     return f_ecg, x
 
 
@@ -166,11 +171,9 @@ def get_data_ecg(f_names, sample_number=0):
     return targets, x
 
 
-def get_data_ecg2(f_name, sample_number=0):
-    if sample_number == 0:
-        f_ecg, x = create_interpolation_function_ecg(f_name, 950)
-    else:
-        f_ecg, x = create_interpolation_function_ecg(f_name, sample_number)
+def get_data_ecg2(f_name, deriveSize):
+
+    f_ecg, x = create_interpolation_function_ecg(f_name, deriveSize)
 
     temp_f_ecg = discretizeECG(f_ecg(x))
     targets = temp_f_ecg
@@ -267,7 +270,7 @@ def reduceImgSize(ListOfPixels, fraction):
         new_ListOfPixels.extend(temp)
 
 
-def vidToNestedPixelList(video, div, derivesize = 1):
+def vidToNestedPixelList(video, div, derivesize, x):
     imageString, amount = vidToImg(video)
 
     nestedPixelList = []
@@ -276,7 +279,10 @@ def vidToNestedPixelList(video, div, derivesize = 1):
         temp = imgToList("data/frame%d.jpg" %frame, div)
         nestedPixelList.append(temp)
 
+    print("HERE")
+    print(np.shape(nestedPixelList))
     temp2 = imgToDerivateOfImg(nestedPixelList, derivesize)
+    temp2 = imgSortOfInterpolation(temp2, x)
 
     # Normalizing the ecg data
     input_mean = np.mean(temp2)
@@ -287,6 +293,33 @@ def vidToNestedPixelList(video, div, derivesize = 1):
 
     return temp2
     #return nestedPixelList
+
+
+
+def imgSortOfInterpolation(imagelist, x):
+
+    print("len x{}".format(len(x)))
+    print("len imageList{}".format(len(imagelist)))
+
+
+
+
+    timesBigger = math.floor(len(x)/len(imagelist))
+    remainder = len(x)%len(imagelist)
+
+    newImageList = []
+    for img_number, img in enumerate(imagelist, 0):
+        for times in range(timesBigger):
+            newImageList.append(imagelist[img_number])
+
+        if remainder > 0:
+            newImageList.append(imagelist[img_number])
+            remainder = remainder - 1
+
+    print("John<3")
+    print(np.shape(newImageList))
+    return newImageList
+
 '''
 
 temp2 = imgToDerivateOfImg(temp)
@@ -314,8 +347,9 @@ def createVidInputsAndTargetEcgs(videoList, ecgList, div, deriveSize = 1):
 
 
     for i, video in enumerate(videoList):
-        temp = vidToNestedPixelList(video, div, deriveSize)
-        temp2, tempx = get_data_ecg2(ecgList[i], len(temp)*deriveSize)
+        #temp2, tempx = get_data_ecg2(ecgList[i], len(temp) * deriveSize)
+        temp2, tempx = get_data_ecg2(ecgList[i], deriveSize)
+        temp = vidToNestedPixelList(video, div, deriveSize, tempx)
         vid_list.append(temp)
         ecg_list.append(temp2)
         time_list.append(tempx)
@@ -349,7 +383,7 @@ def imgToDerivateOfImg(imgList, deriveSize = 1):
                         pixel_number]
             count = count +1
 
-    for times in range(count-1):
+    for times in range(len(temp_list)-count):
         temp_list.pop()
 
     return temp_list

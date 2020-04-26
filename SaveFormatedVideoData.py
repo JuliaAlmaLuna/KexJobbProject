@@ -9,7 +9,7 @@ import numpy as np
 div = 8
 derivesize = 4
 
-for t in range(1, 19):
+for t in range(5, 19):
     print(t)
 
     file_folder = "Julia/ecg_folder/Pat"
@@ -37,6 +37,10 @@ for t in range(1, 19):
     video_list = np.array(n_video_list)
     ecg_list = np.array(n_ecg_list)
 
+    print("ohnoo")
+    print(np.shape(n_video_list))
+    print(np.shape(n_ecg_list))
+    print(np.shape(ecg_x_list))
 
 
 
@@ -46,8 +50,8 @@ for t in range(1, 19):
         rowlength = rowlength + len(n_video_list[i])
 
     video_numpy_correct_array = np.empty([rowlength, int(len(n_video_list[0][0]))])
-    ecg_numpy_correct_array = np.empty([rowlength * derivesize, 1])
-    x_numpy_correct_array = np.empty([rowlength * derivesize, 1])
+    ecg_numpy_correct_array = np.empty([int(5*256/derivesize), 1])
+    x_numpy_correct_array = np.empty([int(5*256/derivesize), 1])
 
     count = 0
 
