@@ -118,6 +118,16 @@ def create_interpolation_function_ecg_v(ecg, v, min_x, max_x, sample_number):
     return f_ecg, f_v, x
 
 
+def create_interpolation_function_ecg2(ecg, sample_number):
+    ecgx = ecg[:, 0]
+    ecgy = ecg[:, 1]
+    f_ecg = interp1d(ecgx, ecgy)
+    min_x = ecgx[0]
+    max_x = ecgx[len(ecgx)-1]
+    x = np.linspace(min_x, max_x, sample_number)
+    return f_ecg, x
+
+
 # Help function to trim array, creates an array of indexes for uniform removal of values
 def create_index_remove_list(remove_quantity, remove_step):
     rmv_index = [0]

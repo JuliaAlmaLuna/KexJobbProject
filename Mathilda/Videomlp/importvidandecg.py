@@ -1,7 +1,7 @@
 import dataManipulationFunctions as dmf
 import numpy as np
 
-number_of_samples = 3 # TODO: set correct number of sampled
+number_of_samples = 3 # TODO: set correct number of samples
 start_index = 2 # TODO: set the number on the first file (Eg. Pat1_Vi1 set start_index at 1)
 step = 2 # TODO: set amount of samples to be saved in one file
 video_prefix = "../Mathilda/Videomlp/video_folder/Pat" # TODO: Set right path
