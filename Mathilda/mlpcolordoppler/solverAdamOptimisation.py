@@ -13,9 +13,11 @@ def start(training_inputs_, training_targets_, testing_inputs_, testing_targets_
     # I think we have to try to optimize for each activation and see which one scores best!
 
 
+    learning_rate = find_best_learning_rate(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
+    mlp.set_params(learning_rate_init=learning_rate)
 
-    beta1, beta2 = find_best_beta(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
-    mlp.set_params(beta_1=beta1, beta_2=beta2)
+    #beta1, beta2 = find_best_beta(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
+    #mlp.set_params(beta_1=beta1, beta_2=beta2)
 
     alpha = find_best_alpha(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
     mlp.set_params(alpha=alpha)
@@ -35,8 +37,33 @@ def start(training_inputs_, training_targets_, testing_inputs_, testing_targets_
     epoch = find_best_epoch(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
     mlp.set_params(max_iter=epoch)
 
-    learning_rate = find_best_learning_rate(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
-    mlp.set_params(learning_rate_init=learning_rate)
+
+
+
+    return mlp
+
+
+def startLbfgs(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp):
+    mlp.fit(training_inputs_, training_targets_)
+
+    # This one changes so much, and does it without knowing how well it will fare with the different parameters. Should we really put it first, or in this function. Maybe a separate function
+    #activation = find_best_activation(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
+    #mlp.set_params(activation=activation)
+    # I think we have to try to optimize for each activation and see which one scores best!
+
+
+    alpha = find_best_alpha(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
+    mlp.set_params(alpha=alpha)
+
+    tolerance = find_best_tolerance(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
+    mlp.set_params(tol=tolerance) #Needs to go through different values from now
+
+    layer_size = find_best_layer_size(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
+    mlp.set_params(hidden_layer_sizes=layer_size)
+
+    epoch = find_best_epoch(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
+    mlp.set_params(max_iter=epoch)
+
 
 
 
@@ -72,7 +99,7 @@ def find_best_learning_rate(training_inputs_, training_targets_, testing_inputs_
     best_MSE = 10000
     best_pearson = -10000
     best_lr = 0
-    for lr in np.arange(0.01, 0.1, 0.01):
+    for lr in np.arange(0.01, 0.2, 0.01):
         mlp.set_params(learning_rate_init=lr)
         mlp.fit(training_inputs_, training_targets_)
         score = mean_squared_error(testing_targets_, mlp.predict(testing_inputs_))
@@ -141,8 +168,8 @@ def pearsonScore(testing_inputs, testing_targets, mlp, best_score):
 def find_best_alpha(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp):
     best_MSE = 10000
     best_pearson = -10000
-    best_alpha = 0.0001
-    for alpha_ in np.arange(0.1, 1, 0.1):
+    best_alpha = 0.0002
+    for alpha_ in np.arange(0.0002, 0.002, 0.0002):
         mlp.set_params(alpha=alpha_)
         mlp.fit(training_inputs_, training_targets_)
         score = mean_squared_error(testing_targets_, mlp.predict(testing_inputs_))
