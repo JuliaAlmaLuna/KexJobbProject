@@ -3,8 +3,8 @@ import dataManipulationFunctions as dmf
 import matplotlib.pyplot as plt
 import numpy as np
 
-targets = np.load("../mlpcolordoppler/targets_good_medium.npy")
-x = np.load("../mlpcolordoppler/x.npy")
+targets = np.load("../../cleanCode/dataset1/dataset 1A/data/targets_good_medium.npy")
+x = np.load("../../cleanCode/dataset1/dataset 1A/data/x.npy")
 targets_old = np.array(targets)
 
 

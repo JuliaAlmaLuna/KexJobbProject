@@ -23,9 +23,9 @@ model.compile(optimizer=tf.keras.optimizers.Adam(0.01),
               loss=tf.keras.losses.mean_squared_error,
               metrics=['accuracy'])
 
-inputs = np.load("inputs_good_medium.npy")
-targets = np.load("targets_good_medium.npy")
-x = np.load("x.npy")
+inputs = np.load("../../cleanCode/dataset1/dataset 1A/data/inputs_good_medium.npy")
+targets = np.load("../../cleanCode/dataset1/dataset 1A/data/targets_good_medium.npy")
+x = np.load("../../cleanCode/dataset1/dataset 1A/data/x.npy")
 
 training_inputs, testing_inputs, training_targets, testing_targets = train_test_split(inputs, targets, test_size=0.3)
 

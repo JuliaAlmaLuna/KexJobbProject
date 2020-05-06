@@ -1,14 +1,12 @@
 import numpy as np
-import dataManipulationFunctions as dmf
 from sklearn.model_selection import train_test_split
 from sklearn.neural_network import MLPRegressor
-from sklearn.preprocessing import normalize
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import explained_variance_score
 from sklearn.metrics import max_error
 from scipy.stats import pearsonr
 from Mathilda.mlpcolordoppler import EvaluationFunctions as ef
-from Mathilda.mlpcolordoppler import solverAdamOptimisation as adam
+from cleanCode.dataset1 import solverAdamOptimisation as adam
 import math
 
 import warnings

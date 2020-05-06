@@ -1,12 +1,12 @@
 import dataManipulationFunctions as dmf
 
 
-file_folder = "Julia/ecg_folder/Pat"
+file_folder = "Julia/data/Pat"
 ecg_suffix = "_3Trace.txt"
 avi_suffix1 = "_Vi.avi"
 
-videoList = ["Julia/ecg_folder/Pat3_Vi.avi", "Julia/ecg_folder/Pat4_Vi.avi"]
-ecgList = ["Julia/ecg_folder/Pat3_3Trace.txt", "Julia/ecg_folder/Pat4_3Trace.txt"]
+videoList = ["Julia/data/Pat3_Vi.avi", "Julia/data/Pat4_Vi.avi"]
+ecgList = ["Julia/data/Pat3_3Trace.txt", "Julia/data/Pat4_3Trace.txt"]
 
 n_video_list, ecg_list = dmf.createVidInputsAndTargetEcgs(videoList, ecgList)
 

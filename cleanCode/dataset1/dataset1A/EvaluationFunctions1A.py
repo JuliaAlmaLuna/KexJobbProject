@@ -3,7 +3,6 @@ from sklearn.metrics import mean_squared_error
 from sklearn.metrics import explained_variance_score
 from sklearn.metrics import max_error
 from scipy.stats import pearsonr
-from Mathilda.mlpcolordoppler.dopplerManipulationFunctions import savgol_filter_ecg
 
 
 def graph_predictions(mlp, testing_inputs, testing_targets, x, rows, columns):

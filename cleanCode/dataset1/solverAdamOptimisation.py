@@ -4,15 +4,9 @@ from sklearn.metrics import mean_squared_error
 from scipy.stats import pearsonr
 import math
 
+
 def start(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp):
     mlp.fit(training_inputs_, training_targets_)
-
-    # This one changes so much, and does it without knowing how well it will fare with the different parameters. Should we really put it first, or in this function. Maybe a separate function
-    #activation = find_best_activation(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
-    #mlp.set_params(activation=activation)
-    # I think we have to try to optimize for each activation and see which one scores best!
-
-
 
     beta1, beta2 = find_best_beta(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
     mlp.set_params(beta_1=beta1, beta_2=beta2)
@@ -38,31 +32,21 @@ def start(training_inputs_, training_targets_, testing_inputs_, testing_targets_
     learning_rate = find_best_learning_rate(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
     mlp.set_params(learning_rate_init=learning_rate)
 
-
-
     return mlp
 
 
 def find_best_activation(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp):
-    best_MSE = 10000
     best_pearson = -10000
     best_activation = 'none'
     activations = ['tanh', 'relu', 'logistic']
     for activation in activations:
         mlp.set_params(activation=activation)
         mlp.fit(training_inputs_, training_targets_)
-        score = mean_squared_error(testing_targets_, mlp.predict(testing_inputs_))
-
-
         pearson = pearsonScore(testing_inputs_, testing_targets_, mlp, best_pearson)
 
         if pearson > best_pearson:
             best_pearson = pearson
             best_activation = activation
-
-       # if score < best_MSE:
-       #     best_MSE = score
-       #     best_activation = activation
 
     print("Best_activation:{}".format(activation))
     return best_activation

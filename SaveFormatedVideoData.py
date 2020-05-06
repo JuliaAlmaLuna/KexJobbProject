@@ -12,19 +12,19 @@ derivesize = 4
 for t in range(5, 19):
     print(t)
 
-    file_folder = "Julia/ecg_folder/Pat"
+    file_folder = "Julia/data/Pat"
     ecg_suffix = "_3Trace.txt"
     avi_suffix1 = "_Vi.avi"
 
     videoList = []
     ecgList = []
     for x in range(t*5,t*5+5):
-        videoList.append("Julia/ecg_folder/Pat{}_Vi.avi".format(x+1))
-        ecgList.append("Julia/ecg_folder/Pat{}_3Trace.txt".format(x+1))
+        videoList.append("Julia/data/Pat{}_Vi.avi".format(x+1))
+        ecgList.append("Julia/data/Pat{}_3Trace.txt".format(x+1))
 
 
-    #videoList = ["Julia/ecg_folder/Pat3_Vi.avi", "Julia/ecg_folder/Pat4_Vi.avi",]
-    #ecgList = ["Julia/ecg_folder/Pat3_3Trace.txt", "Julia/ecg_folder/Pat4_3Trace.txt"]
+    #videoList = ["Julia/data/Pat3_Vi.avi", "Julia/data/Pat4_Vi.avi",]
+    #ecgList = ["Julia/data/Pat3_3Trace.txt", "Julia/data/Pat4_3Trace.txt"]
 
 
 
