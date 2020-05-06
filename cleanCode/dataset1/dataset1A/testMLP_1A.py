@@ -1,5 +1,5 @@
 from sklearn.model_selection import train_test_split
-from cleanCode.dataset1.dataset1A import EvaluationFunctions1A as ef
+from cleanCode.dataset1.dataset1A import evaluationFunctions_1A as ef
 import numpy as np
 import pickle
 import warnings

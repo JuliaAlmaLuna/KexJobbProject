@@ -1,6 +1,6 @@
 import numpy as np
 from sklearn.model_selection import train_test_split
-from cleanCode.dataset1.dataset1B import evaluationFunctions1B as ef
+from cleanCode.dataset1.dataset1B import evaluationFunctions_1B as ef
 import pickle
 import warnings
 warnings.simplefilter(action='ignore', category=Warning)

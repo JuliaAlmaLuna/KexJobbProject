@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.signal import find_peaks
 import matplotlib.pyplot as plt
-import cleanCode.dataset1.dataset1B.peakFunctions as pf
+import cleanCode.dataset1.dataset1B.peakFunctions_1B as pf
 
 ''' Disclaimer: this is a semiautomatic function - follow step by step instructions:
 
