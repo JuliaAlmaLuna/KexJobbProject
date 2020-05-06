@@ -53,19 +53,16 @@ videoNames = []
 for u in range(np.size(X,0)):
     videoNames.append("Video {}".format(u+1))
 
-#Testing out a resize to make it clump together ecg parts
-#np.reshape(ecg, [np.size(ecg)/3,3])
-
 
 #Used this for loop to run through different test/train splits to find average
-for runs in range(1,2):
+for runs in range(1,10):
     training_inputs, testing_inputs, training_targets, testing_targets, training_x, testing_x, training_videoNames, testing_videoNames = train_test_split(videos, ecg, X, videoNames, test_size=0.3, random_state=88)
 
     mlp_lbfgs = MLPRegressor(
-        hidden_layer_sizes=(768,384,320,256,256,192,128), activation='relu', max_fun=60, solver='lbfgs', alpha=0.0006, batch_size='auto',
-        learning_rate='constant', learning_rate_init=0.01, power_t=0.5, max_iter=50, shuffle=True,
-        random_state=20, tol=1, verbose=True, warm_start=False, momentum=0.9, nesterovs_momentum=True,
-        early_stopping=True, validation_fraction=0.1, beta_1=0.6, beta_2=0.6, epsilon=1e-08, n_iter_no_change=2)
+        hidden_layer_sizes=(384,320,256,256,192,128), activation='relu', max_fun=90, solver='lbfgs', alpha=0.0006, batch_size='auto',
+        learning_rate='constant', learning_rate_init=0.1, power_t=0.5, max_iter=80, shuffle=True,
+        random_state=20, tol=0.1, verbose=True, warm_start=False, momentum=0.9, nesterovs_momentum=True,
+        early_stopping=True, validation_fraction=0.1, beta_1=0.6, beta_2=0.6, epsilon=1e-08, n_iter_no_change=10)
 
     optimized_mlp = mlp_lbfgs
 
@@ -79,6 +76,7 @@ for runs in range(1,2):
 
     # Check performance of MLPRegressor, message is text over evaluation that will store in .txt documentp
 
+    #Comment this out to skip the graphing part
     ef.graph_predictions_multi_x(optimized_mlp, testing_inputs, testing_targets, testing_x, rows=int(math.floor(len(testing_targets)/5)+1), columns=5, videoNames=testing_videoNames)
 
     evaluations = ef.evaluate_performance(optimized_mlp, testing_inputs, testing_targets, training_inputs, training_targets,

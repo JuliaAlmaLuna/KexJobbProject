@@ -52,14 +52,14 @@ def startLbfgs(training_inputs_, training_targets_, testing_inputs_, testing_tar
     # I think we have to try to optimize for each activation and see which one scores best!
 
 
-    alpha = find_best_alpha(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
-    mlp.set_params(alpha=alpha)
+   # alpha = find_best_alpha(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
+   # mlp.set_params(alpha=alpha)
 
-    tolerance = find_best_tolerance(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
-    mlp.set_params(tol=tolerance) #Needs to go through different values from now
+  #  tolerance = find_best_tolerance(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
+  #  mlp.set_params(tol=tolerance) #Needs to go through different values from now
 
-    layer_size = find_best_layer_size(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
-    mlp.set_params(hidden_layer_sizes=layer_size)
+    #layer_size = find_best_layer_size(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
+   # mlp.set_params(hidden_layer_sizes=layer_size)
 
     epoch = find_best_epoch(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
     mlp.set_params(max_iter=epoch)
@@ -169,7 +169,7 @@ def find_best_alpha(training_inputs_, training_targets_, testing_inputs_, testin
     best_MSE = 10000
     best_pearson = -10000
     best_alpha = 0.0002
-    for alpha_ in np.arange(0.0002, 0.002, 0.0002):
+    for alpha_ in np.arange(0.00002, 0.0002, 0.00002):
         mlp.set_params(alpha=alpha_)
         mlp.fit(training_inputs_, training_targets_)
         score = mean_squared_error(testing_targets_, mlp.predict(testing_inputs_))
@@ -217,8 +217,9 @@ def find_best_epoch(training_inputs_, training_targets_, testing_inputs_, testin
     best_MSE = 10000
     best_epoch = 0.05
     best_pearson = -10000
-    for epoch_ in np.arange(1, 60, 10):
+    for epoch_ in np.arange(5, 75, 5):
         mlp.set_params(max_iter=epoch_)
+        mlp.set_params(max_fun=epoch_)
         mlp.fit(training_inputs_, training_targets_)
         score = mean_squared_error(testing_targets_, mlp.predict(testing_inputs_))
 
@@ -284,7 +285,7 @@ def find_best_layer_size(training_inputs_, training_targets_, testing_inputs_, t
     best_MSE = 10000
     best_layer_size = 1
     best_pearson = -10000
-    for layer_size in np.arange(1, 150, 10):
+    for layer_size in np.arange(1, 300, 20):
         mlp.set_params(hidden_layer_sizes=layer_size)
         mlp.fit(training_inputs_, training_targets_)
         score = mean_squared_error(testing_targets_, mlp.predict(testing_inputs_))

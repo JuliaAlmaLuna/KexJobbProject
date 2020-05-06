@@ -3,6 +3,8 @@ from sklearn.metrics import mean_squared_error
 from sklearn.metrics import explained_variance_score
 from sklearn.metrics import max_error
 from scipy.stats import pearsonr
+#from Mathilda.mlpcolordoppler.dopplerManipulationFunctions import savgol_filter_ecg
+import math
 
 
 def graph_predictions(mlp, testing_inputs, testing_targets, x, rows, columns):
@@ -23,6 +25,29 @@ def graph_predictions(mlp, testing_inputs, testing_targets, x, rows, columns):
         plt.show()
 
 
+def graph_predictions_multi_x(mlp, testing_inputs, testing_targets, x, rows, columns, videoNames):
+    size = len(testing_inputs)
+    print(len(testing_inputs))
+    if rows*columns < size:
+        return "Graph rows/columns too few"
+    else:
+        for index in range(size):
+            print("ohgo")
+            prediction = mlp.predict(testing_inputs[index, :].reshape(1, -1))
+            true = testing_targets[index, :]
+            ax1 = plt.subplot(rows, columns, index+1)
+
+            #ax1.plot(x[index, :], testing_inputs[index], 'y')
+            ax1.set_title(videoNames[index])
+            #ax2 = ax1.twinx()
+            ax1.plot(x[index, :], true, 'g')
+            ax1.plot(x[index, :], prediction[0, :], 'r')
+
+
+        plt.show()
+        print("hello")
+
+
 def evaluate_performance(mlp, testing_inputs, testing_targets, training_inputs, training_targets, message=""):
     train_prediction = mlp.predict(training_inputs)
     test_prediction = mlp.predict(testing_inputs)
@@ -34,7 +59,11 @@ def evaluate_performance(mlp, testing_inputs, testing_targets, training_inputs, 
     total = 0  # Finding the mean pearson score of testing data
     for index in range(len(testing_inputs)):
         pearson_corr, _ = pearsonr(testing_targets[index, :], test_prediction[index, :])
-        total = total + pearson_corr
+        if math.isnan(pearson_corr):
+            print('')
+        else:
+            total = total + pearson_corr
+
     pearson = total/len(testing_inputs)
 
     curr_max = 0  # Finding the maximum error in all the training data
