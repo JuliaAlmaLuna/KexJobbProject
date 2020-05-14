@@ -3,7 +3,6 @@ from sklearn.metrics import mean_squared_error
 from sklearn.metrics import explained_variance_score
 from sklearn.metrics import max_error
 from scipy.stats import pearsonr
-#from Mathilda.mlpcolordoppler.dopplerManipulationFunctions import savgol_filter_ecg
 import math
 
 
@@ -23,29 +22,6 @@ def graph_predictions(mlp, testing_inputs, testing_targets, x, rows, columns):
             ax2.plot(x, prediction[0, :], 'r')
 
         plt.show()
-
-
-def graph_predictions_multi_x(mlp, testing_inputs, testing_targets, x, rows, columns, videoNames):
-    size = len(testing_inputs)
-    print(len(testing_inputs))
-    if rows*columns < size:
-        return "Graph rows/columns too few"
-    else:
-        for index in range(size):
-            print("ohgo")
-            prediction = mlp.predict(testing_inputs[index, :].reshape(1, -1))
-            true = testing_targets[index, :]
-            ax1 = plt.subplot(rows, columns, index+1)
-
-            #ax1.plot(x[index, :], testing_inputs[index], 'y')
-            ax1.set_title(videoNames[index])
-            #ax2 = ax1.twinx()
-            ax1.plot(x[index, :], true, 'g')
-            ax1.plot(x[index, :], prediction[0, :], 'r')
-
-
-        plt.show()
-        print("hello")
 
 
 def evaluate_performance(mlp, testing_inputs, testing_targets, training_inputs, training_targets, message=""):
@@ -78,4 +54,4 @@ def evaluate_performance(mlp, testing_inputs, testing_targets, training_inputs, 
                   "\nEVS, ua:\t\t\t" + str(ev_score) + "\t\t\tGoal: Same as R2" + "\nMax error:\t\t\t" + \
                   str(curr_max) + "\t\t\tGoal: As low as possible" + "\nPearson:\t\t\t" + str(pearson) + \
                   "\t\t\tGoal: close to 1\n" + line
-    return evaluations
+    return evaluations, pearson, r2_score_, test_mse

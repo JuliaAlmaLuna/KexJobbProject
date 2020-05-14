@@ -6,8 +6,8 @@ import warnings
 warnings.simplefilter(action='ignore', category=Warning)
 
 # Load inputs and targets from computer
-inputs = np.load("data/inputs_good_medium.npy")
-targets = np.load("data/targets_good_medium.npy")
+inputs = np.load("data/inputs_good.npy")
+targets = np.load("data/targets_good.npy")
 X = np.load("data/x.npy")
 
 input_mean = np.mean(inputs)
@@ -21,18 +21,22 @@ for rownumber, rows  in enumerate(inputs):
 training_inputs, testing_inputs, training_targets, testing_targets = train_test_split(inputs, targets, test_size=0.3)
 
 # Import model
-filename = 'mlp_algorithm'
+filename = 'mlp_algorithm_sgd_tanh'
 loaded_model = pickle.load(open(filename, 'rb'))
 
 # re-train model to new partitioning of data
 loaded_model.fit(training_inputs, training_targets)
 
-
 # Check performance of MLPRegressor, message is text over evaluation that will store in .txt document
 ef.graph_predictions(loaded_model, testing_inputs, testing_targets, X, rows=5, columns=6)
-evaluations = ef.evaluate_performance(loaded_model, testing_inputs, testing_targets, training_inputs, training_targets,
+visual_score = input("Please input visual score: ")
+evaluations, pearson, r2, mse = ef.evaluate_performance(loaded_model, testing_inputs, testing_targets, training_inputs, training_targets,
                         message="Trial run 2")
 print(evaluations)
-text_file = open("mlp_eval_1.txt", "w")
-n = text_file.write(str(evaluations))
-text_file.close()
+
+dir = 'evaluations/sgd_tanh/'
+
+np.save(dir + 'pearson', np.append(np.load(dir + 'pearson.npy', allow_pickle=True), pearson))
+np.save(dir + 'mse', np.append(np.load(dir + 'mse.npy', allow_pickle=True), mse))
+np.save(dir + 'r2', np.append(np.load(dir + 'r2.npy', allow_pickle=True), r2))
+np.save(dir + 'visual_score', np.append(np.load(dir + 'visual_score.npy', allow_pickle=True), visual_score))

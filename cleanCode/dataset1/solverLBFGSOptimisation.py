@@ -3,17 +3,9 @@ from scipy.stats import pearsonr
 import math
 
 
-def start(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp, learning_rate=True, beta=True,
-          alpha=True, val_frac=True, tolerance=True, n_iter_no_change=True, hidden_layer_sizes=True, max_iter=True):
+def start(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp, alpha=True, val_frac=True,
+          tolerance=True, hidden_layer_sizes=True, max_iter=True, max_fun=True):
     mlp.fit(training_inputs_, training_targets_)
-
-    if learning_rate:
-        learning_rate = find_best_learning_rate(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
-        mlp.set_params(learning_rate_init=learning_rate)
-
-    if beta:
-        beta1, beta2 = find_best_beta(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
-        mlp.set_params(beta_1=beta1, beta_2=beta2)
 
     if alpha:
         alpha = find_best_alpha(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
@@ -27,9 +19,9 @@ def start(training_inputs_, training_targets_, testing_inputs_, testing_targets_
         tolerance = find_best_tolerance(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
         mlp.set_params(tol=tolerance)
 
-    if n_iter_no_change:
-        iterations = find_best_iterations(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
-        mlp.set_params(n_iter_no_change=iterations)
+    if max_fun:
+        maxfun = find_best_maxfun(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
+        mlp.set_params(max_fun=maxfun)
 
     if hidden_layer_sizes:
         layer_size = find_best_layer_size(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp)
@@ -40,41 +32,6 @@ def start(training_inputs_, training_targets_, testing_inputs_, testing_targets_
         mlp.set_params(max_iter=epoch)
 
     return mlp
-
-
-def find_best_learning_rate(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp):
-    best_pearson = -10000
-    best_lr = 0
-    for lr in np.arange(0.01, 0.2, 0.01):
-        mlp.set_params(learning_rate_init=lr)
-        mlp.fit(training_inputs_, training_targets_)
-        pearson = pearson_score(testing_inputs_, testing_targets_, mlp, best_pearson)
-
-        if pearson > best_pearson:
-            best_pearson = pearson
-            best_lr = lr
-
-    print("Best_learning_rate_init:{}".format(lr))
-    return best_lr
-
-
-def find_best_beta(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp):
-    best_pearson = -10000
-    best_beta1 = 0
-    best_beta2 = 0
-    for beta1_ in np.arange(0.1, 1, 0.2):
-        for beta2_ in np.arange(0.1, 1, 0.2):
-            mlp.set_params(beta_1=beta1_, beta_2=beta2_)
-            mlp.fit(training_inputs_, training_targets_)
-            pearson = pearson_score(testing_inputs_, testing_targets_, mlp, best_pearson)
-
-            if pearson > best_pearson:
-                best_pearson = pearson
-                best_beta1 = beta1_
-                best_beta2 = beta2_
-
-    print("Best_beta1:{}".format(best_beta1) + "And best best_beta2:{}".format(best_beta2))
-    return best_beta1, best_beta2
 
 
 def pearson_score(testing_inputs, testing_targets, mlp, best_score):
@@ -155,22 +112,6 @@ def find_best_tolerance(training_inputs_, training_targets_, testing_inputs_, te
     return best_tol
 
 
-def find_best_iterations(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp):
-    best_iter = 0
-    best_pearson = -10000
-    for iter in np.arange(10, 60, 10):
-        mlp.set_params(n_iter_no_change=iter)
-        mlp.fit(training_inputs_, training_targets_)
-        pearson = pearson_score(testing_inputs_, testing_targets_, mlp, best_pearson)
-
-        if pearson > best_pearson:
-            best_pearson = pearson
-            best_iter = iter
-
-    print("Best_n_iter_no_change:{}".format(best_iter))
-    return best_iter
-
-
 def find_best_layer_size(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp):
     best_layer_size = 1
     best_pearson = -10000
@@ -185,3 +126,20 @@ def find_best_layer_size(training_inputs_, training_targets_, testing_inputs_, t
 
     print("Best_layer size:{}".format(best_layer_size))
     return best_layer_size
+
+
+def find_best_maxfun(training_inputs_, training_targets_, testing_inputs_, testing_targets_, mlp):
+    best_epoch = 10000
+    best_pearson = -10000
+    for epoch_ in np.arange(10000, 50000, 1000):
+        mlp.set_params(max_fun=epoch_)
+        mlp.fit(training_inputs_, training_targets_)
+        pearson = pearson_score(testing_inputs_, testing_targets_, mlp, best_pearson)
+
+        if pearson > best_pearson:
+            best_pearson = pearson
+            best_epoch = epoch_
+
+    print("Best_max_fun number:{}".format(best_epoch))
+    return best_epoch
+

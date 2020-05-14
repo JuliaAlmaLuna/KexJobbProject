@@ -1,14 +1,24 @@
 import matplotlib.pyplot as plt
 from scipy.stats import pearsonr
 import warnings
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import r2_score
 warnings.simplefilter(action='ignore', category=Warning)
 
 
 def score(long_target, long_prediction):
     # pearson calculation
     pearson_corr, _ = pearsonr(long_target, long_prediction)
-    score = "Pearson: " + str(pearson_corr)
-    return score
+    score_ = "Pearson: " + str(pearson_corr)
+
+    # MSE calculation
+    MSE = mean_squared_error(long_target, long_prediction)
+    score_ += "\nMSE: " + str(MSE)
+
+    # R2-score
+    r2 = r2_score(long_target, long_prediction)
+    score_ += "\nR2 : " + str(r2)
+    return score_, pearson_corr, MSE, r2
 
 
 def graph_long(x_testing_targets, x_testing_inputs, predictions, sampling_size):
